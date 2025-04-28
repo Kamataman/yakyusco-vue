@@ -1,9 +1,6 @@
 <script setup>
-import { useGameResultStore } from "../stores/gameResultStore";
 // import BattingResultRow from "./BattingResultRow.vue";
 // import PitchingResultRow from "./PitchingResultRow.vue";
-
-const store = useGameResultStore();
 
 function addBattingResult() {
   store.battingResults.push({
