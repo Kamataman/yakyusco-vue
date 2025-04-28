@@ -29,7 +29,7 @@
       </q-tabs>
     </q-header>
 
-    <q-page-container>
+    <q-page-container class="q-ma-md">
       <router-view />
     </q-page-container>
 

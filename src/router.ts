@@ -8,6 +8,7 @@ import GameResultView from "./components/GameResultView.vue";
 import StatsView from "./components/Stats.vue";
 import TeamTop from "./components/TeamTop.vue";
 import AddGameResultView from "./components/AddGameResultView.vue";
+import Testview from "./views/testview.vue";
 
 const routes = [
   { path: "/", component: AppTop },
@@ -35,6 +36,7 @@ const routes = [
       { path: "stats", name: "stats", component: StatsView },
     ],
   },
+  { path: "/test", component: Testview },
 ];
 
 const router = createRouter({
