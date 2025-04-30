@@ -1,77 +1,91 @@
 <template>
-  <p class="text-h5">選手一覧</p>
-  <q-btn
-    label="選手を追加"
-    color="primary"
-    @click="isModalOpen = true"
-    class="q-mb-md"
-  />
+  <BaseLayout
+    ><template #title>選手一覧</template>
+    <template #default>
+      <q-btn
+        label="選手を追加"
+        color="primary"
+        @click="isModalOpen = true"
+        class="q-mb-md"
+      />
 
-  <div class="row q-pa-sm">
-    <div
-      v-for="(player, i) in players"
-      :key="i"
-      class="q-pa-xs"
-      style="width: 20rem"
-    >
-      <q-card class="my-card">
-        <q-card-section>
-          <div class="text-h6">{{ player.name }}</div>
-          <div class="text-subtitle2">#{{ player.number }}</div>
-        </q-card-section>
+      <div class="row q-pa-sm">
+        <div
+          v-for="(player, i) in players"
+          :key="i"
+          class="q-pa-xs"
+          style="width: 20rem"
+        >
+          <q-card class="my-card">
+            <q-card-section>
+              <div class="text-h6">{{ player.name }}</div>
+              <div class="text-subtitle2">#{{ player.number }}</div>
+            </q-card-section>
 
-        <q-separator />
+            <q-separator />
 
-        <q-card-actions>
-          <q-btn flat label="編集" @click="openEditModal(player)" />
-          <q-btn
-            flat
-            label="削除"
-            color="negative"
-            @click="deletePlayer(player.id)"
-          />
-        </q-card-actions>
-      </q-card>
-    </div>
-  </div>
-
-  <!-- モーダル -->
-  <q-dialog v-model="isModalOpen">
-    <q-card style="min-width: 400px">
-      <q-card-section>
-        <div class="text-h6">
-          {{ isEditMode ? "選手を編集" : "選手を追加" }}
+            <q-card-actions>
+              <q-btn flat label="編集" @click="openEditModal(player)" />
+              <q-btn
+                flat
+                label="削除"
+                color="negative"
+                @click="deletePlayer(player.id)"
+              />
+            </q-card-actions>
+          </q-card>
         </div>
-      </q-card-section>
+      </div>
 
-      <q-card-section>
-        <q-input
-          v-model="newPlayer.name"
-          label="名前"
-          outlined
-          class="q-mb-md"
-        />
-        <q-input
-          v-model="newPlayer.number"
-          label="背番号"
-          outlined
-          type="text"
-          class="q-mb-md"
-        />
-      </q-card-section>
+      <!-- モーダル -->
+      <q-dialog v-model="isModalOpen">
+        <q-card style="min-width: 400px">
+          <q-card-section>
+            <div class="text-h6">
+              {{ isEditMode ? "選手を編集" : "選手を追加" }}
+            </div>
+          </q-card-section>
 
-      <q-card-actions align="right">
-        <q-btn flat label="キャンセル" color="negative" @click="resetModal" />
-        <q-btn flat label="保存" color="positive" @click="addOrUpdatePlayer" />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+          <q-card-section>
+            <q-input
+              v-model="newPlayer.name"
+              label="名前"
+              outlined
+              class="q-mb-md"
+            />
+            <q-input
+              v-model="newPlayer.number"
+              label="背番号"
+              outlined
+              type="text"
+              class="q-mb-md"
+            />
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn
+              flat
+              label="キャンセル"
+              color="negative"
+              @click="resetModal"
+            />
+            <q-btn
+              flat
+              label="保存"
+              color="positive"
+              @click="addOrUpdatePlayer"
+            />
+          </q-card-actions>
+        </q-card>
+      </q-dialog> </template
+  ></BaseLayout>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router"; // useRouteをインポート
 import axiosInstance from "@/plugins/axios"; // axios設定をインポート
+import BaseLayout from "@/components/BaseLayout.vue";
 
 const route = useRoute(); // 現在のルート情報を取得
 const teamId = route.params.team as string; // URLのパラメータからteamを取得

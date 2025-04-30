@@ -1,48 +1,54 @@
 <template>
-  <p class="text-h5">試合結果</p>
-  <div class="column items-center">
-    <div class="column">
-      <q-card>
-        <q-card-section>
-          <div class="q-pa-sm">
-            {{ getWinLoseExpression(gameResult.winlose) }}
-          </div>
-          <div class="text-h6 q-pa-xs">
-            <template v-if="gameResult.is_ff"
-              >vs {{ gameResult.bf_Team_name }}</template
-            >
-            <template v-else>vs {{ gameResult.ff_Team_name }}</template>
-          </div>
-          <div class="q-pa-sm">
-            <div>日時： {{ gameResult.date }}</div>
-            <div>場所： {{ gameResult.place }}</div>
-          </div>
-        </q-card-section>
-        <q-card-section>
-          <ScoreBoard :rows="scoreBoardRow" :innings="gameResult.innings" />
-        </q-card-section>
-        <q-card-section>
-          {{ gameResult.review }}
-        </q-card-section>
-      </q-card>
-    </div>
-    <div class="column">
-      <BattingResult />
-    </div>
-  </div>
-  <q-btn
-    label="編集"
-    color="primary"
-    @click="
-      $router.push({
-        name: 'editgameresult',
-        params: {
-          team: $route.params.team,
-          gameResultId: $route.params.gameResultId,
-        },
-      })
-    "
-  />
+  <BaseLayout
+    ><template #title>試合結果</template>
+    <template #default>
+      <div class="column items-center">
+        <div class="column">
+          <q-card>
+            <q-card-section>
+              <div class="q-pa-sm">
+                {{ getWinLoseExpression(gameResult.winlose) }}
+              </div>
+              <div class="text-h6 q-pa-xs">
+                <template v-if="gameResult.is_ff"
+                  >vs {{ gameResult.bf_Team_name }}</template
+                >
+                <template v-else>vs {{ gameResult.ff_Team_name }}</template>
+              </div>
+              <div class="q-pa-sm">
+                <div>日時： {{ gameResult.date }}</div>
+                <div>場所： {{ gameResult.place }}</div>
+              </div>
+            </q-card-section>
+            <q-card-section>
+              <ScoreBoard :rows="scoreBoardRow" :innings="gameResult.innings" />
+            </q-card-section>
+            <q-card-section>
+              {{ gameResult.review }}
+            </q-card-section>
+          </q-card>
+        </div>
+        <div class="column">
+          <BattingResult />
+        </div>
+        <div class="column">
+          <PitchingResult />
+        </div>
+      </div>
+      <q-btn
+        label="編集"
+        color="primary"
+        @click="
+          $router.push({
+            name: 'editgameresult',
+            params: {
+              team: $route.params.team,
+              gameResultId: $route.params.gameResultId,
+            },
+          })
+        "
+      /> </template
+  ></BaseLayout>
 </template>
 
 <script setup lang="ts">
@@ -52,6 +58,8 @@ import router from "@/router";
 
 import ScoreBoard from "@/components/ScoreBoard.vue";
 import BattingResult from "@/components/BattingResult.vue";
+import PitchingResult from "@/components/PitchingResult.vue";
+import BaseLayout from "@/components/BaseLayout.vue";
 
 import type { GameResult, ScoreBoardRow } from "@/adapters/adapter";
 import {

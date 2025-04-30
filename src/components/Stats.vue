@@ -1,5 +1,40 @@
+<template>
+  <BaseLayout
+    ><template #title>個人成績一覧</template>
+    <template #default>
+      <div class="q-pa-md">
+        <q-table
+          flat
+          bordered
+          title="野手成績"
+          dense
+          :rows="battingRows"
+          :columns="battingColumns"
+          row-key="no"
+          hide-bottom
+          separator="cell"
+        />
+      </div>
+      <div class="q-pa-md">
+        <q-table
+          flat
+          bordered
+          title="投手成績"
+          dense
+          :rows="pitchingRows"
+          :columns="pitchingColumns"
+          row-key="no"
+          hide-bottom
+          separator="cell"
+        />
+      </div> </template
+  ></BaseLayout>
+</template>
+
 <script setup lang="ts">
 import type { QTableProps } from "quasar";
+
+import BaseLayout from "@/components/BaseLayout.vue";
 
 const battingColumns: QTableProps["columns"] = [
   {
@@ -151,33 +186,3 @@ const pitchingRows: QTableProps["rows"] = [
   },
 ];
 </script>
-
-<template>
-  <h5>個人成績一覧</h5>
-  <div class="q-pa-md">
-    <q-table
-      flat
-      bordered
-      title="野手成績"
-      dense
-      :rows="battingRows"
-      :columns="battingColumns"
-      row-key="no"
-      hide-bottom
-      separator="cell"
-    />
-  </div>
-  <div class="q-pa-md">
-    <q-table
-      flat
-      bordered
-      title="投手成績"
-      dense
-      :rows="pitchingRows"
-      :columns="pitchingColumns"
-      row-key="no"
-      hide-bottom
-      separator="cell"
-    />
-  </div>
-</template>

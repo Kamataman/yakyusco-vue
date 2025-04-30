@@ -1,36 +1,39 @@
 <template>
-  <p class="text-h5">試合結果一覧</p>
-  <div
-    class="game-result-detail"
-    v-for="(result, i) in gameResults"
-    :key="result.id"
-  >
-    <div class="team-info">
-      <RouterLink :to="`gameresult/${result.id}`">
-        <p>
-          <strong>
-            {{ result.bf_Team_name }} vs {{ result.ff_Team_name }}</strong
-          >
+  <BaseLayout
+    ><template #title>試合結果一覧</template>
+    <template #default>
+      <div
+        class="game-result-detail"
+        v-for="(result, i) in gameResults"
+        :key="result.id"
+      >
+        <div class="team-info">
+          <RouterLink :to="`gameresult/${result.id}`">
+            <p>
+              <strong>
+                {{ result.bf_Team_name }} vs {{ result.ff_Team_name }}</strong
+              >
 
-          {{ getWinLoseExpression(result.winlose) }}
-        </p>
-        <ScoreBoard :rows="scoreBoardRows[i]" :innings="result.innings" />
-      </RouterLink>
-    </div>
-  </div>
+              {{ getWinLoseExpression(result.winlose) }}
+            </p>
+            <ScoreBoard :rows="scoreBoardRows[i]" :innings="result.innings" />
+          </RouterLink>
+        </div>
+      </div>
 
-  <div class="flex justify-end" style="margin: 10px">
-    <q-btn
-      label="+"
-      color="primary"
-      @click="
-        $router.push({
-          name: 'addgameresult',
-          params: { team: $route.params.team },
-        })
-      "
-    />
-  </div>
+      <div class="flex justify-end" style="margin: 10px">
+        <q-btn
+          label="+"
+          color="primary"
+          @click="
+            $router.push({
+              name: 'addgameresult',
+              params: { team: $route.params.team },
+            })
+          "
+        />
+      </div> </template
+  ></BaseLayout>
 </template>
 
 <script setup lang="ts">
@@ -39,6 +42,7 @@ import { useRoute } from "vue-router"; // useRouteをインポート
 import axiosInstance from "@/plugins/axios"; // axios設定をインポート
 
 import ScoreBoard from "@/components/ScoreBoard.vue"; // ScoreBoardコンポーネントをインポート
+import BaseLayout from "@/components/BaseLayout.vue";
 
 import type { GameResult } from "@/adapters/adapter.ts";
 import {
