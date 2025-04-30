@@ -9,18 +9,31 @@
       >
         <div class="team-info">
           <RouterLink :to="`gameresult/${result.id}`">
-            <p>
-              <strong>
-                {{ result.bf_Team_name }} vs {{ result.ff_Team_name }}</strong
-              >
+            <div class="column items-center">
+              <GameResultCard
+                :is-edit="false"
+                :win-lose="result.winlose"
+                :is-ff="result.is_ff"
+                :ff-team-name="result.ff_Team_name"
+                :bf-team-name="result.bf_Team_name"
+                :date="result.date"
+                :place="result.place"
+                :innings="result.innings"
+                :score-board-row="scoreBoardRows[i]"
+              ></GameResultCard>
+            </div>
 
-              {{ getWinLoseExpression(result.winlose) }}
-            </p>
-            <ScoreBoard :rows="scoreBoardRows[i]" :innings="result.innings" />
+            <!-- <p>
+                <strong>
+                  {{ result.bf_Team_name }} vs {{ result.ff_Team_name }}</strong
+                  >
+                  
+                  {{ getWinLoseExpression(result.winlose) }}
+                </p>
+                <ScoreBoard :rows="scoreBoardRows[i]" :innings="result.innings" /> -->
           </RouterLink>
         </div>
       </div>
-
       <div class="flex justify-end" style="margin: 10px">
         <q-btn
           label="+"
@@ -41,14 +54,11 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router"; // useRouteをインポート
 import axiosInstance from "@/plugins/axios"; // axios設定をインポート
 
-import ScoreBoard from "@/components/ScoreBoard.vue"; // ScoreBoardコンポーネントをインポート
 import BaseLayout from "@/components/BaseLayout.vue";
 
 import type { GameResult } from "@/adapters/adapter.ts";
-import {
-  transformGameResultToScoreData,
-  getWinLoseExpression,
-} from "@/adapters/adapter.ts"; // アダプターをインポート
+import { transformGameResultToScoreData } from "@/adapters/adapter.ts"; // アダプターをインポート
+import GameResultCard from "@/components/GameResultCard.vue";
 
 const route = useRoute(); // 現在のルート情報を取得
 const teamId = route.params.team as string; // URLのパラメータからteamを取得

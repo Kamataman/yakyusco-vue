@@ -1,13 +1,12 @@
 // Setting Router
 import { createRouter, createWebHistory } from "vue-router";
 import AppTop from "@/views/AppTop.vue";
-import TeamHomeView from "@/views/TeamHomePage.vue";
-import PlayerListView from "@/views/PlayerListPage.vue";
-import GameResultListView from "@/views/GameResultListPage.vue";
-import GameResultView from "@/views/GameResultPage.vue";
-import StatsView from "@/views/StatsPage.vue";
+import TeamHomePage from "@/views/TeamHomePage.vue";
+import PlayerListPage from "@/views/PlayerListPage.vue";
+import GameResultListPage from "@/views/GameResultListPage.vue";
+import GameResultPage from "@/views/GameResultPage.vue";
+import StatsPage from "@/views/StatsPage.vue";
 import TeamTop from "@/views/TeamTop.vue";
-import AddGameResultView from "@/views/AddGameResultPage.vue";
 import Testview from "@/views/testview.vue";
 
 const routes = [
@@ -16,24 +15,26 @@ const routes = [
     path: "/:team",
     component: TeamTop,
     children: [
-      { path: "", name: "home", component: TeamHomeView },
+      { path: "", name: "home", component: TeamHomePage },
       {
         path: "gameresults",
         name: "gameresults",
-        component: GameResultListView,
+        component: GameResultListPage,
       },
       {
         path: "gameresult/:gameResultId",
         name: "gameresult",
-        component: GameResultView,
+        component: GameResultPage,
+        props: { isAdd: false },
       },
       {
         path: "gameresult/add",
         name: "addgameresult",
-        component: AddGameResultView,
+        component: GameResultPage,
+        props: { isAdd: true },
       },
-      { path: "players", name: "players", component: PlayerListView },
-      { path: "stats", name: "stats", component: StatsView },
+      { path: "players", name: "players", component: PlayerListPage },
+      { path: "stats", name: "stats", component: StatsPage },
     ],
   },
   { path: "/test", component: Testview },

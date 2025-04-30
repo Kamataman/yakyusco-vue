@@ -2,52 +2,28 @@
   <BaseLayout
     ><template #title>試合結果</template>
     <template #default>
-      <div class="column items-center">
-        <div class="column">
-          <q-card>
-            <q-card-section>
-              <div class="q-pa-sm">
-                {{ getWinLoseExpression(gameResult.winlose) }}
-              </div>
-              <div class="text-h6 q-pa-xs">
-                <template v-if="gameResult.is_ff"
-                  >vs {{ gameResult.bf_Team_name }}</template
-                >
-                <template v-else>vs {{ gameResult.ff_Team_name }}</template>
-              </div>
-              <div class="q-pa-sm">
-                <div>日時： {{ gameResult.date }}</div>
-                <div>場所： {{ gameResult.place }}</div>
-              </div>
-            </q-card-section>
-            <q-card-section>
-              <ScoreBoard :rows="scoreBoardRow" :innings="gameResult.innings" />
-            </q-card-section>
-            <q-card-section>
-              {{ gameResult.review }}
-            </q-card-section>
-          </q-card>
-        </div>
-        <div class="column">
-          <BattingResult />
-        </div>
-        <div class="column">
-          <PitchingResult />
-        </div>
+      <div v-if="!isAdd">編集モード<q-toggle v-model="isEdit" /></div>
+      <GameResultCard
+        :is-edit="isEdit"
+        :win-lose="gameResult.winlose"
+        :is-ff="gameResult.is_ff"
+        :ff-team-name="gameResult.ff_Team_name"
+        :bf-team-name="gameResult.bf_Team_name"
+        :date="gameResult.date"
+        :place="gameResult.place"
+        :innings="gameResult.innings"
+        :review="gameResult.review"
+        :score-board-row="scoreBoardRow"
+      ></GameResultCard>
+      <div class="column">
+        <BattingResult />
       </div>
-      <q-btn
-        label="編集"
-        color="primary"
-        @click="
-          $router.push({
-            name: 'editgameresult',
-            params: {
-              team: $route.params.team,
-              gameResultId: $route.params.gameResultId,
-            },
-          })
-        "
-      /> </template
+      <div class="column">
+        <PitchingResult />
+      </div>
+      <div v-if="isAdd">
+        <q-btn color="primary" label="保存" />
+      </div> </template
   ></BaseLayout>
 </template>
 
@@ -56,16 +32,18 @@ import { ref, onMounted } from "vue";
 import axiosInstance from "@/plugins/axios";
 import router from "@/router";
 
-import ScoreBoard from "@/components/ScoreBoard.vue";
 import BattingResult from "@/components/BattingResult.vue";
 import PitchingResult from "@/components/PitchingResult.vue";
 import BaseLayout from "@/components/BaseLayout.vue";
 
 import type { GameResult, ScoreBoardRow } from "@/adapters/adapter";
-import {
-  transformGameResultToScoreData,
-  getWinLoseExpression,
-} from "@/adapters/adapter";
+import { transformGameResultToScoreData } from "@/adapters/adapter";
+import GameResultCard from "@/components/GameResultCard.vue";
+
+const props = defineProps<{
+  isAdd: Boolean;
+}>();
+const isEdit = ref<boolean>(false);
 
 const gameResult = ref<GameResult>({
   is_ff: true,
@@ -96,23 +74,27 @@ const scoreBoardRow = ref<ScoreBoardRow[]>([
 ]);
 
 onMounted(async () => {
-  const gameresult_id = router.currentRoute.value.params.gameResultId;
+  if (props.isAdd) {
+    isEdit.value = true;
+  } else {
+    isEdit.value = false;
+    const gameresult_id = router.currentRoute.value.params.gameResultId;
+    try {
+      const response = await axiosInstance.get(`/gameresults/${gameresult_id}`);
+      gameResult.value = response.data;
 
-  try {
-    const response = await axiosInstance.get(`/gameresults/${gameresult_id}`);
-    gameResult.value = response.data;
-
-    // 各試合結果をスコアボード用データに変換
-    if (gameResult.value) {
-      scoreBoardRow.value = transformGameResultToScoreData({
-        bf_Team_name: gameResult.value.bf_Team_name,
-        ff_Team_name: gameResult.value.ff_Team_name,
-        bf_runs: gameResult.value.bf_runs,
-        ff_runs: gameResult.value.ff_runs,
-      });
+      // 各試合結果をスコアボード用データに変換
+      if (gameResult.value) {
+        scoreBoardRow.value = transformGameResultToScoreData({
+          bf_Team_name: gameResult.value.bf_Team_name,
+          ff_Team_name: gameResult.value.ff_Team_name,
+          bf_runs: gameResult.value.bf_runs,
+          ff_runs: gameResult.value.ff_runs,
+        });
+      }
+    } catch (error) {
+      console.error("試合結果の取得に失敗しました:", error);
     }
-  } catch (error) {
-    console.error("試合結果の取得に失敗しました:", error);
   }
 });
 </script>
