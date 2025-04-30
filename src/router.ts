@@ -1,14 +1,14 @@
 // Setting Router
 import { createRouter, createWebHistory } from "vue-router";
-import AppTop from "./components/AppTop.vue";
-import TeamHomeView from "./components/TeamHomeView.vue";
-import PlayerListView from "./components/PlayerListView.vue";
-import GameResultListView from "./components/GameResultListView.vue";
-import GameResultView from "./components/GameResultView.vue";
-import StatsView from "./components/Stats.vue";
-import TeamTop from "./components/TeamTop.vue";
-import AddGameResultView from "./components/AddGameResultView.vue";
-import Testview from "./views/testview.vue";
+import AppTop from "@/views/AppTop.vue";
+import TeamHomeView from "@/views/TeamHomePage.vue";
+import PlayerListView from "@/views/PlayerListPage.vue";
+import GameResultListView from "@/views/GameResultListPage.vue";
+import GameResultView from "@/views/GameResultPage.vue";
+import StatsView from "@/views/StatsPage.vue";
+import TeamTop from "@/views/TeamTop.vue";
+import AddGameResultView from "@/views/AddGameResultPage.vue";
+import Testview from "@/views/testview.vue";
 
 const routes = [
   { path: "/", component: AppTop },
