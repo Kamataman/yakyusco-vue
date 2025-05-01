@@ -14,6 +14,8 @@ export type GameResult = {
   ff_total_runs: number;
   is_X: boolean;
   id: number;
+  batting_results: BattingResultClass[];
+  pitching_results: PitchingResultClass[];
 };
 
 type GameResultToScoreBoard = {
@@ -70,9 +72,30 @@ export function getWinLoseExpression(winlose: string): string {
   }
 }
 
+export class BattingResultClass {
+  player_id: number | undefined;
+  position: number[];
+  rbi: number;
+  runs: number;
+  steels: number;
+  [key: string]: string | number;
+
+  constructor(data: {
+    player_id?: number;
+    position: string;
+    rbi: number;
+    runs: number;
+    steels: number;
+  }) {
+    this.player_id = data.player_id;
+    this.position = data.position;
+    this.rbi = data.rbi;
+    this.runs = data.runs;
+    this.steels = data.steels;
+  }
+}
 export class PitchingResultClass {
-  player_number: string;
-  player_name: string;
+  player_id: number | undefined;
   innings: number;
   pitchs: number;
   batters: number;
@@ -85,12 +108,9 @@ export class PitchingResultClass {
   runs: number;
   earned_runs: number;
   result: string;
-  pitching_order: number;
-  player_id: number;
 
   constructor(data: {
-    player_number: string;
-    player_name: string;
+    player_id?: number;
     innings: number;
     pitchs: number;
     batters: number;
@@ -103,11 +123,8 @@ export class PitchingResultClass {
     runs: number;
     earned_runs: number;
     result: string;
-    pitching_order: number;
-    player_id: number;
   }) {
-    this.player_number = data.player_number;
-    this.player_name = data.player_name;
+    this.player_id = data.player_id;
     this.innings = data.innings;
     this.pitchs = data.pitchs;
     this.batters = data.batters;
@@ -120,7 +137,5 @@ export class PitchingResultClass {
     this.runs = data.runs;
     this.earned_runs = data.earned_runs;
     this.result = data.result;
-    this.pitching_order = data.pitching_order;
-    this.player_id = data.player_id;
   }
 }

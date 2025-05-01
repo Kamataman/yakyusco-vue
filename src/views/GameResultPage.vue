@@ -15,11 +15,19 @@
         :review="gameResult.review"
         :score-board-row="scoreBoardRow"
       ></GameResultCard>
-      <div class="column">
-        <BattingResult :initialData="[]" :isEdit="isEdit" />
+      <div class="column q-pa-sm">
+        <h2 class="text-h5 q-mb-md">打撃成績</h2>
+        <BattingResult
+          v-model:battingResultModel="gameResult.batting_results"
+          :isEdit="isEdit"
+        />
       </div>
-      <div class="column">
-        <PitchingResult />
+      <div class="column q-pa-sm">
+        <h2 class="text-h5 q-mb-md">投手成績</h2>
+        <PitchingResult
+          v-model:pitchingresultModel="gameResult.pitching_results"
+          :isEdit="isEdit"
+        />
       </div>
       <div v-if="isAdd">
         <q-btn color="primary" label="保存" />
@@ -32,12 +40,15 @@ import { ref, onMounted } from "vue";
 import axiosInstance from "@/plugins/axios";
 import router from "@/router";
 
-import BattingResult from "@/components/BattingResult.vue";
-import PitchingResult from "@/components/PitchingResult.vue";
+import BattingResult from "@/components/BattingResultTable.vue";
+import PitchingResult from "@/components/PitchingResultsTable.vue";
 import BaseLayout from "@/components/BaseLayout.vue";
 
 import type { GameResult, ScoreBoardRow } from "@/adapters/adapter";
-import { transformGameResultToScoreData } from "@/adapters/adapter";
+import {
+  PitchingResultClass,
+  transformGameResultToScoreData,
+} from "@/adapters/adapter";
 import GameResultCard from "@/components/GameResultCard.vue";
 
 const props = defineProps<{
@@ -61,6 +72,24 @@ const gameResult = ref<GameResult>({
   team_id: "",
   id: 0,
   is_X: false,
+  batting_results: [],
+  pitching_results: [
+    new PitchingResultClass({
+      innings: 0,
+      pitchs: 0,
+      batters: 0,
+      hits: 0,
+      homeruns: 0,
+      strikeouts: 0,
+      walks: 0,
+      hit_by_pitch: 0,
+      balks: 0,
+      runs: 0,
+      earned_runs: 0,
+      result: "-",
+      player_id: undefined,
+    }),
+  ],
 });
 const scoreBoardRow = ref<ScoreBoardRow[]>([
   {
