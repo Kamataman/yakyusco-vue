@@ -2,30 +2,13 @@
   <div class="q-pa-md">
     <h2 class="text-h5 q-mb-md">投手成績</h2>
 
-    <!-- 編集モード切り替えボタン -->
-    <div class="q-mb-md">
-      <q-btn
-        :color="isEditing ? 'negative' : 'primary'"
-        :label="isEditing ? '編集を終了' : '編集モード'"
-        @click="toggleEditMode"
-        class="q-mr-md"
-      />
-      <q-btn
-        v-if="isEditing"
-        color="positive"
-        label="保存"
-        @click="saveChanges"
-      />
-    </div>
-
     <!-- 投手成績表 -->
     <q-table
-      flat
-      :rows="rows"
+      :rows="pitchingresultModel"
       :columns="columns"
       row-key="player_id"
-      class="pitching-stats-table"
-      :pagination="{ rowsPerPage: 0 }"
+      table-header-class="{vertical-header-table:true}"
+      hide-pagination
     >
       <template v-slot:header="props">
         <q-tr :props="props">
@@ -54,27 +37,14 @@
             :props="props"
             :style="getCellStyle(col.name, props.row)"
           >
-            <!-- 編集モードの場合 -->
-            <template v-if="isEditing">
-              <q-input
-                v-model="props.row[col.name]"
-                dense
-                borderless
-                class="edit-cell"
-              />
-            </template>
-
-            <!-- 表示モードの場合 -->
-            <template v-else>
-              {{ props.row[col.name] }}
-            </template>
+            <EditShowComponent v-model="props.row[col.name]" :isEdit="isEdit" />
           </q-td>
         </q-tr>
       </template>
     </q-table>
 
     <!-- 投手追加ボタン (編集モード時のみ表示) -->
-    <div v-if="isEditing" class="q-mt-md">
+    <div v-if="isEdit" class="q-mt-md">
       <q-btn
         icon="add"
         label="投手を追加"
@@ -86,44 +56,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import EditShowComponent from "@/components/EditShowComponent.vue";
+import type { PitchingResultClass } from "@/adapters/adapter";
 
 // Propsで外部から初期データを受け取る
 const props = defineProps({
-  initialData: {
-    type: Array,
-    default: () => [],
+  isEdit: {
+    type: Boolean,
+    default: false,
   },
 });
-const getDefaultData = () => {
-  return [
-    {
-      player_number: "41",
-      player_name: "選手A",
-      innings: 5,
-      pitchs: 80,
-      batters: 20,
-      hits: 3,
-      homeruns: 1,
-      strikeouts: 5,
-      walks: 2,
-      hit_by_pitch: 0,
-      balks: 0,
-      runs: 2,
-      earned_runs: 2,
-      result: "W",
-      pitching_order: 1,
-      player_id: 1,
-    },
-  ];
-};
 
-// ローカルステート
-const isEditing = ref(false);
-const rows = ref(
-  props.initialData.length > 0
-    ? JSON.parse(JSON.stringify(props.initialData))
-    : getDefaultData()
+const pitchingresultModel = defineModel<PitchingResultClass[]>(
+  "pitchingresultModel",
+  { default: [] }
 );
 
 // カラム定義
@@ -133,6 +79,7 @@ const columns = [
     label: "背番号",
     field: "player_number",
     align: "center",
+    headerClasses: "vertical-header-table",
   },
   { name: "player_name", label: "選手名", field: "player_name", align: "left" },
   { name: "innings", label: "投球回", field: "innings", align: "center" },
@@ -167,7 +114,7 @@ const columns = [
 
 // メソッド
 const toggleEditMode = () => {
-  isEditing.value = !isEditing.value;
+  isEdit.value = !isEdit.value;
 };
 
 const saveChanges = () => {
@@ -176,7 +123,7 @@ const saveChanges = () => {
   console.log("保存されたデータ:", rows.value);
 
   // 保存完了の通知
-  isEditing.value = false;
+  isEdit.value = false;
 };
 
 const addPitcher = () => {

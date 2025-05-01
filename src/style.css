@@ -77,3 +77,11 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.vertical-header-table tr {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  height: 120px;
+  text-align: center;
+  vertical-align: bottom;
+}

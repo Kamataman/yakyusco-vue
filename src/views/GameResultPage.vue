@@ -16,7 +16,7 @@
         :score-board-row="scoreBoardRow"
       ></GameResultCard>
       <div class="column">
-        <BattingResult />
+        <BattingResult :initialData="[]" :isEdit="isEdit" />
       </div>
       <div class="column">
         <PitchingResult />

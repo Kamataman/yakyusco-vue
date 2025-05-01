@@ -2,28 +2,32 @@
   <BaseLayout
     ><template #title>試合結果一覧</template>
     <template #default>
-      <div
-        class="game-result-detail"
-        v-for="(result, i) in gameResults"
-        :key="result.id"
-      >
-        <div class="team-info">
-          <RouterLink :to="`gameresult/${result.id}`">
-            <div class="column items-center">
-              <GameResultCard
-                :is-edit="false"
-                :win-lose="result.winlose"
-                :is-ff="result.is_ff"
-                :ff-team-name="result.ff_Team_name"
-                :bf-team-name="result.bf_Team_name"
-                :date="result.date"
-                :place="result.place"
-                :innings="result.innings"
-                :score-board-row="scoreBoardRows[i]"
-              ></GameResultCard>
-            </div>
+      <template v-if="gameResults.length === 0">
+        <div class="text-h6">選手が登録されていません。</div>
+      </template>
+      <template v-else>
+        <div
+          class="game-result-detail"
+          v-for="(result, i) in gameResults"
+          :key="result.id"
+        >
+          <div class="team-info">
+            <RouterLink :to="`gameresult/${result.id}`">
+              <div class="column items-center">
+                <GameResultCard
+                  :is-edit="false"
+                  :win-lose="result.winlose"
+                  :is-ff="result.is_ff"
+                  :ff-team-name="result.ff_Team_name"
+                  :bf-team-name="result.bf_Team_name"
+                  :date="result.date"
+                  :place="result.place"
+                  :innings="result.innings"
+                  :score-board-row="scoreBoardRows[i]"
+                ></GameResultCard>
+              </div>
 
-            <!-- <p>
+              <!-- <p>
                 <strong>
                   {{ result.bf_Team_name }} vs {{ result.ff_Team_name }}</strong
                   >
@@ -31,9 +35,10 @@
                   {{ getWinLoseExpression(result.winlose) }}
                 </p>
                 <ScoreBoard :rows="scoreBoardRows[i]" :innings="result.innings" /> -->
-          </RouterLink>
+            </RouterLink>
+          </div>
         </div>
-      </div>
+      </template>
       <div class="flex justify-end" style="margin: 10px">
         <q-btn
           label="+"

@@ -69,3 +69,58 @@ export function getWinLoseExpression(winlose: string): string {
       return "";
   }
 }
+
+export class PitchingResultClass {
+  player_number: string;
+  player_name: string;
+  innings: number;
+  pitchs: number;
+  batters: number;
+  hits: number;
+  homeruns: number;
+  strikeouts: number;
+  walks: number;
+  hit_by_pitch: number;
+  balks: number;
+  runs: number;
+  earned_runs: number;
+  result: string;
+  pitching_order: number;
+  player_id: number;
+
+  constructor(data: {
+    player_number: string;
+    player_name: string;
+    innings: number;
+    pitchs: number;
+    batters: number;
+    hits: number;
+    homeruns: number;
+    strikeouts: number;
+    walks: number;
+    hit_by_pitch: number;
+    balks: number;
+    runs: number;
+    earned_runs: number;
+    result: string;
+    pitching_order: number;
+    player_id: number;
+  }) {
+    this.player_number = data.player_number;
+    this.player_name = data.player_name;
+    this.innings = data.innings;
+    this.pitchs = data.pitchs;
+    this.batters = data.batters;
+    this.hits = data.hits;
+    this.homeruns = data.homeruns;
+    this.strikeouts = data.strikeouts;
+    this.walks = data.walks;
+    this.hit_by_pitch = data.hit_by_pitch;
+    this.balks = data.balks;
+    this.runs = data.runs;
+    this.earned_runs = data.earned_runs;
+    this.result = data.result;
+    this.pitching_order = data.pitching_order;
+    this.player_id = data.player_id;
+  }
+}

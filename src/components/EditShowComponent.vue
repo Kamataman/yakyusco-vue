@@ -1,6 +1,6 @@
 <template>
   <template v-if="isEdit">
-    <q-input v-model="model" filled dense item-aligned></q-input>
+    <q-input v-model="model" dense></q-input>
   </template>
   <template v-else> {{ model }}</template>
 </template>

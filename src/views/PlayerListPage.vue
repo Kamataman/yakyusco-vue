@@ -10,31 +10,36 @@
       />
 
       <div class="row q-pa-sm">
-        <div
-          v-for="(player, i) in players"
-          :key="i"
-          class="q-pa-xs"
-          style="width: 20rem"
-        >
-          <q-card class="my-card">
-            <q-card-section>
-              <div class="text-h6">{{ player.name }}</div>
-              <div class="text-subtitle2">#{{ player.number }}</div>
-            </q-card-section>
+        <template v-if="players.length === 0">
+          <div class="text-h6">選手が登録されていません。</div>
+        </template>
+        <template v-else>
+          <div
+            v-for="(player, i) in players"
+            :key="i"
+            class="q-pa-xs"
+            style="width: 20rem"
+          >
+            <q-card class="my-card">
+              <q-card-section>
+                <div class="text-h6">{{ player.name }}</div>
+                <div class="text-subtitle2">#{{ player.number }}</div>
+              </q-card-section>
 
-            <q-separator />
+              <q-separator />
 
-            <q-card-actions>
-              <q-btn flat label="編集" @click="openEditModal(player)" />
-              <q-btn
-                flat
-                label="削除"
-                color="negative"
-                @click="deletePlayer(player.id)"
-              />
-            </q-card-actions>
-          </q-card>
-        </div>
+              <q-card-actions>
+                <q-btn flat label="編集" @click="openEditModal(player)" />
+                <q-btn
+                  flat
+                  label="削除"
+                  color="negative"
+                  @click="deletePlayer(player.id)"
+                />
+              </q-card-actions>
+            </q-card>
+          </div>
+        </template>
       </div>
 
       <!-- モーダル -->
