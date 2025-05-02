@@ -6,6 +6,8 @@
     row-key="player_id"
     class="baseball-stats-table"
     hide-pagination
+    rowsPerPage="0"
+    :rows-per-page-options="[0]"
   >
     <template v-slot:header="props">
       <q-tr :props="props">
@@ -16,7 +18,16 @@
           class="text-center"
           :style="headerStyle(col.name)"
         >
-          {{ col.label }}
+          <template v-if="col.name === 'atbat_results'">
+            <!-- 編集モードのときのみ打席結果のカラムを表示する -->
+            <template v-if="isEdit">
+              {{ col.label }}
+            </template>
+            <template v-else></template>
+          </template>
+          <template v-else>
+            {{ col.label }}
+          </template>
         </q-th>
       </q-tr>
     </template>
@@ -48,10 +59,17 @@
               :is-edit="isEdit"
             />
           </template>
+          <!-- 打席結果のセル -->
+          <template v-else-if="isEdit && col.name === 'atbat_results'">
+            <InputAtbatResult v-model:atbatResults="props.row[col.name]" />
+          </template>
           <!-- その他のセル -->
-          <template v-else>
+          <template v-else-if="col.name === 'rbi'">
             <EditShowComponent v-model="props.row[col.name]" :isEdit="isEdit" />
           </template>
+          <!-- <template v-else>
+            <EditShowComponent v-model="props.row[col.name]" :isEdit="isEdit" />
+          </template> -->
         </q-td>
       </q-tr>
     </template>
@@ -72,9 +90,9 @@
 <script setup lang="ts">
 import EditShowComponent from "@/components/EditShowComponent.vue";
 import SelectPlayer from "@/components/SelectPlayer.vue";
+import InputAtbatResult from "@/components/InputAtbatResults.vue";
 import SelectPositions from "./SelectPositions.vue";
 import type { BattingResultClass } from "@/adapters/adapter";
-import { ref, onMounted } from "vue";
 
 defineProps<{
   isEdit: boolean;
@@ -116,45 +134,13 @@ const columns: {
   { name: "rbi", label: "打点", field: "rbi", align: "center" },
   { name: "runs", label: "得点", field: "runs", align: "center" },
   { name: "steels", label: "盗塁", field: "steels", align: "center" },
-  { name: "inning1", label: "1回", field: "inning1", align: "center" },
-  { name: "inning2", label: "2回", field: "inning2", align: "center" },
-  { name: "inning3", label: "3回", field: "inning3", align: "center" },
-  { name: "inning4", label: "4回", field: "inning4", align: "center" },
-  { name: "inning5", label: "5回", field: "inning5", align: "center" },
-  { name: "inning6", label: "6回", field: "inning6", align: "center" },
-  { name: "inning7", label: "7回", field: "inning7", align: "center" },
-  { name: "inning8", label: "8回", field: "inning8", align: "center" },
+  {
+    name: "atbat_results",
+    label: "打席結果",
+    field: "atbat_results",
+    align: "left",
+  },
 ];
-
-const battingResultOptions = ref<string[]>([
-  "空三振",
-  "見三振",
-  "二ゴロ",
-  "遊ゴロ",
-  "三ゴロ",
-  "一ゴロ",
-  "投ゴロ",
-  "捕ゴロ",
-  "中安",
-  "左安",
-  "右安",
-  "左2",
-  "中2",
-  "右2",
-  "三飛",
-  "遊飛",
-  "二飛",
-  "一飛",
-  "右飛",
-  "中飛",
-  "左飛",
-  "四球",
-  "死球",
-  "犠打",
-  "犠飛",
-  "投飛打",
-  "失策",
-]);
 
 // const displayRows = computed(() => rows.value);
 
@@ -214,25 +200,6 @@ function getCellClass(value: string): string {
     return "scoring-position-cell";
   }
   return "";
-}
-
-function getDefaultData(): Row[] {
-  return [
-    {
-      id: 1,
-      position: "(右)",
-      number: "1",
-      name: "選手A",
-      hits: "0",
-      runs: "1",
-      bases: "1",
-      inning1: "中安",
-      inning2: "空三振",
-      inning4: "見三振",
-      inning6: "遊ゴロ",
-    },
-    // 他のデフォルトデータ...
-  ];
 }
 </script>
 

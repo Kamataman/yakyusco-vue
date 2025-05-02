@@ -46,6 +46,7 @@ import BaseLayout from "@/components/BaseLayout.vue";
 
 import type { GameResult, ScoreBoardRow } from "@/adapters/adapter";
 import {
+  BattingResultClass,
   PitchingResultClass,
   transformGameResultToScoreData,
 } from "@/adapters/adapter";
@@ -72,24 +73,8 @@ const gameResult = ref<GameResult>({
   team_id: "",
   id: 0,
   is_X: false,
-  batting_results: [],
-  pitching_results: [
-    new PitchingResultClass({
-      innings: 0,
-      pitchs: 0,
-      batters: 0,
-      hits: 0,
-      homeruns: 0,
-      strikeouts: 0,
-      walks: 0,
-      hit_by_pitch: 0,
-      balks: 0,
-      runs: 0,
-      earned_runs: 0,
-      result: "-",
-      player_id: undefined,
-    }),
-  ],
+  batting_results: Array.from({ length: 9 }, () => new BattingResultClass()), // 9人分の打撃成績
+  pitching_results: Array.from({ length: 2 }, () => new PitchingResultClass()), // 2人分の投手成績
 });
 const scoreBoardRow = ref<ScoreBoardRow[]>([
   {

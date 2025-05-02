@@ -78,22 +78,28 @@ export class BattingResultClass {
   rbi: number;
   runs: number;
   steels: number;
-  [key: string]: string | number;
+  atbat_results: AtbatResultClass[];
 
-  constructor(data: {
+  constructor(data?: {
     player_id?: number;
-    position: string;
-    rbi: number;
-    runs: number;
-    steels: number;
+    position?: number[];
+    rbi?: number;
+    runs?: number;
+    steels?: number;
+    atbat_results?: AtbatResultClass[];
   }) {
-    this.player_id = data.player_id;
-    this.position = data.position;
-    this.rbi = data.rbi;
-    this.runs = data.runs;
-    this.steels = data.steels;
+    this.player_id = data?.player_id ?? undefined;
+    this.position = data?.position ?? [];
+    this.rbi = data?.rbi ?? 0;
+    this.runs = data?.runs ?? 0;
+    this.steels = data?.steels ?? 0;
+    this.atbat_results = data?.atbat_results ?? [
+      new AtbatResultClass(),
+      new AtbatResultClass(),
+    ];
   }
 }
+
 export class PitchingResultClass {
   player_id: number | undefined;
   innings: number;
@@ -109,33 +115,52 @@ export class PitchingResultClass {
   earned_runs: number;
   result: string;
 
-  constructor(data: {
+  constructor(data?: {
     player_id?: number;
-    innings: number;
-    pitchs: number;
-    batters: number;
-    hits: number;
-    homeruns: number;
-    strikeouts: number;
-    walks: number;
-    hit_by_pitch: number;
-    balks: number;
-    runs: number;
-    earned_runs: number;
-    result: string;
+    innings?: number;
+    pitchs?: number;
+    batters?: number;
+    hits?: number;
+    homeruns?: number;
+    strikeouts?: number;
+    walks?: number;
+    hit_by_pitch?: number;
+    balks?: number;
+    runs?: number;
+    earned_runs?: number;
+    result?: string;
   }) {
-    this.player_id = data.player_id;
-    this.innings = data.innings;
-    this.pitchs = data.pitchs;
-    this.batters = data.batters;
-    this.hits = data.hits;
-    this.homeruns = data.homeruns;
-    this.strikeouts = data.strikeouts;
-    this.walks = data.walks;
-    this.hit_by_pitch = data.hit_by_pitch;
-    this.balks = data.balks;
-    this.runs = data.runs;
-    this.earned_runs = data.earned_runs;
-    this.result = data.result;
+    this.player_id = data?.player_id ?? undefined;
+    this.innings = data?.innings ?? 0;
+    this.pitchs = data?.pitchs ?? 0;
+    this.batters = data?.batters ?? 0;
+    this.hits = data?.hits ?? 0;
+    this.homeruns = data?.homeruns ?? 0;
+    this.strikeouts = data?.strikeouts ?? 0;
+    this.walks = data?.walks ?? 0;
+    this.hit_by_pitch = data?.hit_by_pitch ?? 0;
+    this.balks = data?.balks ?? 0;
+    this.runs = data?.runs ?? 0;
+    this.earned_runs = data?.earned_runs ?? 0;
+    this.result = data?.result ?? "";
+  }
+}
+
+export class AtbatResultClass {
+  inning: number;
+  result: string;
+  position: number;
+  is_scpos: boolean;
+
+  constructor(data?: {
+    inning?: number;
+    result?: string;
+    position?: number;
+    is_scpos?: boolean;
+  }) {
+    this.inning = data?.inning ?? 0;
+    this.result = data?.result ?? "";
+    this.position = data?.position ?? 0;
+    this.is_scpos = data?.is_scpos ?? false;
   }
 }

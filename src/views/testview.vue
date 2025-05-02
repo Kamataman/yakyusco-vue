@@ -1,49 +1,23 @@
 <template>
-  <PitchingResult v-model:pitchingresultModel="data" :isEdit="isEdit" />
+  <InputAtbatResult v-model:atbatResults="data" />
 </template>
 <script setup lang="ts">
-import type { PitchingResultClass } from "@/adapters/adapter";
-import PitchingResult from "@/components/PitchingResult.vue";
+import { AtbatResultClass } from "@/adapters/adapter";
 import { ref } from "vue";
+import InputAtbatResult from "@/components/InputAtbatResults.vue";
 
-const isEdit = ref(false);
-
-const data = ref<PitchingResultClass[]>([
+const data = ref<AtbatResultClass[]>([
   {
-    innings: 5,
-    pitchs: 80,
-    batters: 20,
-    hits: 3,
-    homeruns: 1,
-    strikeouts: 5,
-    walks: 2,
-    hit_by_pitch: 0,
-    balks: 0,
-    runs: 2,
-    earned_runs: 2,
-    result: "W",
-    pitching_order: 1,
-    player_id: 2,
-    player_number: "11",
-    player_name: "たろう",
+    inning: 1,
+    result: "K",
+    position: 1,
+    is_scpos: true,
   },
   {
-    innings: 5,
-    pitchs: 80,
-    batters: 20,
-    hits: 3,
-    homeruns: 1,
-    strikeouts: 5,
-    walks: 2,
-    hit_by_pitch: 0,
-    balks: 0,
-    runs: 2,
-    earned_runs: 2,
-    result: "W",
-    pitching_order: 1,
-    player_id: 2,
-    player_number: "11",
-    player_name: "たろう",
+    inning: 3,
+    result: "K",
+    position: 1,
+    is_scpos: true,
   },
 ]);
 </script>
