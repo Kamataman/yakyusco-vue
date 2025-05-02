@@ -25,6 +25,13 @@
             </template>
             <template v-else></template>
           </template>
+          <template v-else-if="/^\d+$/.test(col.name)">
+            <!-- 編集モードでないときのみ打席結果のカラムを表示する -->
+            <template v-if="!isEdit">
+              {{ col.label }}
+            </template>
+            <template v-else></template>
+          </template>
           <template v-else>
             {{ col.label }}
           </template>
@@ -60,12 +67,32 @@
             />
           </template>
           <!-- 打席結果のセル -->
-          <template v-else-if="isEdit && col.name === 'atbat_results'">
-            <InputAtbatResult v-model:atbatResults="props.row[col.name]" />
+          <template v-else-if="col.name === 'atbat_results'">
+            <template v-if="isEdit">
+              <InputAtbatResult v-model:atbatResults="props.row[col.name]" />
+            </template>
           </template>
-          <!-- その他のセル -->
+          <!-- 打点のセル -->
           <template v-else-if="col.name === 'rbi'">
             <EditShowComponent v-model="props.row[col.name]" :isEdit="isEdit" />
+          </template>
+          <!-- 得点のセル -->
+          <template v-else-if="col.name === 'runs'">
+            <EditShowComponent v-model="props.row[col.name]" :isEdit="isEdit" />
+          </template>
+          <!-- 盗塁のセル -->
+          <template v-else-if="col.name === 'steels'">
+            <EditShowComponent v-model="props.row[col.name]" :isEdit="isEdit" />
+          </template>
+          <!-- イニングのセル -->
+          <template v-else-if="/^\d+$/.test(col.name)">
+            <template v-if="!isEdit">
+              <template
+                v-for="atbatInInning in props.row['atbat_results'].filter((x:AtbatResultClass)=>x.inning===parseInt(col.name))"
+              >
+                <ShowAtbatResult :atbatResult="atbatInInning"></ShowAtbatResult
+              ></template>
+            </template>
           </template>
           <!-- <template v-else>
             <EditShowComponent v-model="props.row[col.name]" :isEdit="isEdit" />
@@ -91,11 +118,14 @@
 import EditShowComponent from "@/components/EditShowComponent.vue";
 import SelectPlayer from "@/components/SelectPlayer.vue";
 import InputAtbatResult from "@/components/InputAtbatResults.vue";
-import SelectPositions from "./SelectPositions.vue";
-import type { BattingResultClass } from "@/adapters/adapter";
+import SelectPositions from "@/components/SelectPositions.vue";
+import ShowAtbatResult from "@/components/ShowAtbatResult.vue";
+import { AtbatResultClass, BattingResultClass } from "@/adapters/adapter";
+import { computed } from "vue";
 
-defineProps<{
+const props = defineProps<{
   isEdit: boolean;
+  innings: number;
 }>();
 
 const battingResultModel = defineModel<BattingResultClass[]>(
@@ -122,25 +152,36 @@ const columns: {
   field: string;
   align: "center" | "left" | "right" | undefined;
   headerClasses?: string;
-}[] = [
-  {
-    name: "player_id",
-    label: "選手",
-    field: "player",
+}[] = computed(() => {
+  const baseColumns = [
+    {
+      name: "player_id",
+      label: "選手",
+      field: "player",
+      align: "center",
+      headerClasses: "vertical-header-table",
+    },
+    { name: "position", label: "位置", field: "position", align: "center" },
+    { name: "rbi", label: "打点", field: "rbi", align: "center" },
+    { name: "runs", label: "得点", field: "runs", align: "center" },
+    { name: "steels", label: "盗塁", field: "steels", align: "center" },
+    {
+      name: "atbat_results",
+      label: "打席結果",
+      field: "atbat_results",
+      align: "left",
+    },
+  ];
+  // イニングごとのカラムを追加
+  const inningColumns = Array.from({ length: props.innings }, (_, i) => ({
+    name: `${i + 1}`,
+    label: `${i + 1}回`,
+    field: `inning${i + 1}`,
     align: "center",
-    headerClasses: "vertical-header-table",
-  },
-  { name: "position", label: "位置", field: "position", align: "center" },
-  { name: "rbi", label: "打点", field: "rbi", align: "center" },
-  { name: "runs", label: "得点", field: "runs", align: "center" },
-  { name: "steels", label: "盗塁", field: "steels", align: "center" },
-  {
-    name: "atbat_results",
-    label: "打席結果",
-    field: "atbat_results",
-    align: "left",
-  },
-];
+  }));
+
+  return [...baseColumns, ...inningColumns];
+});
 
 // const displayRows = computed(() => rows.value);
 
@@ -154,21 +195,7 @@ const columns: {
 // }
 
 function addPlayer() {
-  battingResultModel.value.push({
-    player_id: undefined,
-    position: [],
-    rbi: 0,
-    runs: 0,
-    steels: 0,
-    inning1: "",
-    inning2: "",
-    inning3: "",
-    inning4: "",
-    inning5: "",
-    inning6: "",
-    inning7: "",
-    inning8: "",
-  });
+  battingResultModel.value.push(new BattingResultClass());
 }
 
 function headerStyle(colName: string): string {
@@ -178,7 +205,7 @@ function headerStyle(colName: string): string {
   return "background-color: #e0f7ff;";
 }
 
-function getCellStyle(colName: string, row: Row): string {
+function getCellStyle(colName: string): string {
   if (colName === "position") {
     return "width: 50px; color: #964B00;";
   }

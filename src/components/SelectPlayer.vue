@@ -17,8 +17,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
 import axiosInstance from "@/plugins/axios";
+import { getTeamIdFromUrl } from "@/adapters/adapter";
 
 defineProps<{
   isEdit: boolean;
@@ -32,8 +32,7 @@ const options = ref<
 >([]);
 
 onMounted(async () => {
-  const route = useRoute(); // 現在のルート情報を取得
-  const teamId = route.params.team as string; // URLのパラメータからteamを取得
+  const teamId = getTeamIdFromUrl(); // URLのパラメータからteamを取得
   try {
     const response = await axiosInstance.get(`/teams/${teamId}/players/`); // URLから取得したteamIdを使用
 

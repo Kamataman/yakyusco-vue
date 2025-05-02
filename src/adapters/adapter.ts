@@ -1,3 +1,5 @@
+import { useRoute } from "vue-router";
+
 export type GameResult = {
   team_id: string;
   is_ff: boolean;
@@ -89,7 +91,7 @@ export class BattingResultClass {
     atbat_results?: AtbatResultClass[];
   }) {
     this.player_id = data?.player_id ?? undefined;
-    this.position = data?.position ?? [];
+    this.position = data?.position ?? [0];
     this.rbi = data?.rbi ?? 0;
     this.runs = data?.runs ?? 0;
     this.steels = data?.steels ?? 0;
@@ -149,7 +151,7 @@ export class PitchingResultClass {
 export class AtbatResultClass {
   inning: number;
   result: string;
-  position: number;
+  position?: number;
   is_scpos: boolean;
 
   constructor(data?: {
@@ -160,7 +162,13 @@ export class AtbatResultClass {
   }) {
     this.inning = data?.inning ?? 0;
     this.result = data?.result ?? "";
-    this.position = data?.position ?? 0;
+    this.position = data?.position ?? undefined;
     this.is_scpos = data?.is_scpos ?? false;
   }
+}
+
+export function getTeamIdFromUrl() {
+  const route = useRoute(); // 現在のルート情報を取得
+  const teamId = route.params.team as string; // URLのパラメータからteamを取得
+  return teamId;
 }

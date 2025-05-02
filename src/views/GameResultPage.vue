@@ -20,6 +20,7 @@
         <BattingResult
           v-model:battingResultModel="gameResult.batting_results"
           :isEdit="isEdit"
+          :innings="gameResult.innings"
         />
       </div>
       <div class="column q-pa-sm">
@@ -30,7 +31,7 @@
         />
       </div>
       <div v-if="isAdd">
-        <q-btn color="primary" label="保存" />
+        <q-btn color="primary" label="保存" @click="saveGameResult" />
       </div> </template
   ></BaseLayout>
 </template>
@@ -47,6 +48,7 @@ import BaseLayout from "@/components/BaseLayout.vue";
 import type { GameResult, ScoreBoardRow } from "@/adapters/adapter";
 import {
   BattingResultClass,
+  getTeamIdFromUrl,
   PitchingResultClass,
   transformGameResultToScoreData,
 } from "@/adapters/adapter";
@@ -90,6 +92,7 @@ const scoreBoardRow = ref<ScoreBoardRow[]>([
 onMounted(async () => {
   if (props.isAdd) {
     isEdit.value = true;
+    gameResult.value.team_id = getTeamIdFromUrl();
   } else {
     isEdit.value = false;
     const gameresult_id = router.currentRoute.value.params.gameResultId;
@@ -111,4 +114,28 @@ onMounted(async () => {
     }
   }
 });
+
+function saveGameResult() {
+  if (props.isAdd) {
+    axiosInstance
+      .post("/gameresults", gameResult.value)
+      .then((response) => {
+        console.log("試合結果が保存されました:", response.data);
+        router.push({ name: "GameResultList" });
+      })
+      .catch((error) => {
+        console.error("試合結果の保存に失敗しました:", error);
+      });
+  } else {
+    axiosInstance
+      .put(`/gameresults/${gameResult.value.id}`, gameResult.value)
+      .then((response) => {
+        console.log("試合結果が更新されました:", response.data);
+        router.push({ name: "GameResultList" });
+      })
+      .catch((error) => {
+        console.error("試合結果の更新に失敗しました:", error);
+      });
+  }
+}
 </script>
