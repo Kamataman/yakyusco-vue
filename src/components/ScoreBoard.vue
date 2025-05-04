@@ -3,22 +3,43 @@
     flat
     bordered
     square
-    :rows="props.rows"
+    :rows="rowRef"
     :columns="columns"
     row-key="team"
     class="scoreboard-table"
     hide-bottom
-  />
+  >
+    <template v-slot:body="props">
+      <q-tr :props="props">
+        <q-td v-for="col in props.cols" :key="col.name" :props="props">
+          <template v-if="isEdit && /^inning\d+$/.test(col.name)">
+            <q-input
+              v-model="rows[props.rowIndex][col.name]"
+              :input-style="{ color: 'white' }"
+              type="number"
+              min="0"
+              max="99"
+              dense
+            />
+          </template>
+          <template v-else> {{ props.row[col.name] }}</template>
+        </q-td></q-tr
+      ></template
+    ></q-table
+  >
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from "vue";
+import type { ScoreBoardRow } from "@/adapters/adapter";
+import { ref, computed } from "vue";
 
 // propsで外部からデータを受け取る
-const props = defineProps<{
-  rows: Array<{ [key: string]: string | number; team: string }>;
-  innings: number;
-}>();
+const rows = defineModel<ScoreBoardRow[]>("rows", { default: () => [] });
+const rowRef = ref(rows);
+const props = defineProps({
+  isEdit: Boolean,
+  innings: Number,
+});
 
 // columnsを動的に生成
 const columns = computed<
@@ -62,6 +83,9 @@ const columns = computed<
   overflow-x: auto;
 }
 .scoreboard-table .q-table__container {
+  color: #ffffff;
+}
+.q-field__native {
   color: #ffffff;
 }
 .scoreboard-table td,

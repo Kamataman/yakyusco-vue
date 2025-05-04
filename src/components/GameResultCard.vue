@@ -9,14 +9,48 @@
     <q-card-section horizontal>
       <q-card-section>
         <div class="q-pa-sm">
-          <div v-if="winLose == 'W'" style="color: red">
-            {{ getWinLoseExpression(winLose) }}
-          </div>
-          <div v-else-if="winLose == 'L'" style="color: blue">
-            {{ getWinLoseExpression(winLose) }}
-          </div>
-          <div v-else>
-            {{ getWinLoseExpression(winLose) }}
+          <!-- 先攻後攻 -->
+          <template v-if="isEdit">
+            <q-select
+              v-model="isFf"
+              :options="[
+                { label: '先攻', value: false },
+                { label: '後攻', value: true },
+              ]"
+              label="先攻後攻"
+              dense
+              emit-value
+              map-options
+            />
+          </template>
+          <template v-else>
+            <!-- 何も表示しない -->
+          </template>
+          <!-- 勝敗 -->
+          <template v-if="isEdit">
+            <q-select
+              v-model="winLose"
+              :options="[
+                { label: '勝利', value: 'W' },
+                { label: '敗北', value: 'L' },
+                { label: '引分', value: 'D' },
+              ]"
+              label="勝敗"
+              dense
+              emit-value
+              map-options
+            />
+          </template>
+          <template v-else>
+            <div :style="getWinLoseColorStyle(winLose)">
+              {{ winLoseExpression }}
+            </div>
+          </template>
+          <div>
+            イニング数：<EditShowComponent
+              :isEdit="isEdit"
+              v-model="innings"
+            ></EditShowComponent>
           </div>
           <div>
             日時：<EditShowComponent
@@ -33,7 +67,11 @@
         </div>
       </q-card-section>
       <q-card-section>
-        <ScoreBoard :rows="scoreBoardRow" :innings="innings" />
+        <ScoreBoard
+          v-model:rows="scoreBoardRow"
+          :innings="innings"
+          :isEdit="isEdit"
+        />
       </q-card-section>
     </q-card-section>
     <q-card-section>
@@ -47,7 +85,7 @@ import type { ScoreBoardRow } from "@/adapters/adapter";
 import ScoreBoard from "@/components/ScoreBoard.vue";
 import EditShowComponent from "./EditShowComponent.vue";
 
-import { getWinLoseExpression } from "@/adapters/adapter";
+import { computed } from "vue";
 
 defineProps<{
   isEdit: boolean;
@@ -55,11 +93,10 @@ defineProps<{
   //   isFf: boolean;
   //   ffTeamName: string;
   //   bfTeamName: string;
-  date: string;
-  place: string;
+  // date: string;
+  // place: string;
   //   innings: number;
-  review?: string;
-  scoreBoardRow: ScoreBoardRow[];
+  // review?: string;
 }>();
 
 const winLose = defineModel<string>("winLose");
@@ -71,4 +108,29 @@ const place = defineModel<string>("place");
 const innings = defineModel<number>("innings");
 const review = defineModel<string | undefined>("review");
 const scoreBoardRow = defineModel<ScoreBoardRow[]>("scoreBoardRow");
+
+const winLoseExpression = computed(() => {
+  console.log("winLose.value", winLose.value);
+  switch (winLose.value) {
+    case "W":
+      return "勝利！！";
+    case "L":
+      return "敗北．．．";
+    case "D":
+      return "引き分け";
+    default:
+      return "aa";
+  }
+});
+
+function getWinLoseColorStyle(winLose: string | undefined) {
+  switch (winLose) {
+    case "W":
+      return "color : red";
+    case "L":
+      return "color : blue";
+    default:
+      return "";
+  }
+}
 </script>

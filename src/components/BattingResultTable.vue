@@ -94,9 +94,9 @@
               ></template>
             </template>
           </template>
-          <!-- <template v-else>
+          <template v-else>
             <EditShowComponent v-model="props.row[col.name]" :isEdit="isEdit" />
-          </template> -->
+          </template>
         </q-td>
       </q-tr>
     </template>
@@ -154,6 +154,18 @@ const columns: {
   headerClasses?: string;
 }[] = computed(() => {
   const baseColumns = [
+    {
+      name: "batting_order",
+      label: "打順",
+      field: "batting_order",
+      align: "center",
+    },
+    {
+      name: "batting_order_num",
+      label: "打順毎の登場順",
+      field: "batting_order_num",
+      align: "center",
+    },
     {
       name: "player_id",
       label: "選手",

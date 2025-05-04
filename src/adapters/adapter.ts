@@ -15,7 +15,6 @@ export type GameResult = {
   bf_total_runs: number;
   ff_total_runs: number;
   is_X: boolean;
-  id: number;
   batting_results: BattingResultClass[];
   pitching_results: PitchingResultClass[];
 };
@@ -61,7 +60,7 @@ export function transformGameResultToScoreData(
   ];
 }
 
-export function getWinLoseExpression(winlose: string): string {
+export function getWinLoseExpression(winlose: string | undefined): string {
   switch (winlose) {
     case "W":
       return "勝利！！";
@@ -76,29 +75,32 @@ export function getWinLoseExpression(winlose: string): string {
 
 export class BattingResultClass {
   player_id: number | undefined;
-  position: number[];
+  batting_order: number;
+  batting_order_num: number;
   rbi: number;
   runs: number;
   steels: number;
+  position: number[];
   atbat_results: AtbatResultClass[];
 
   constructor(data?: {
     player_id?: number;
-    position?: number[];
+    batting_order?: number;
+    batting_order_num?: number;
     rbi?: number;
     runs?: number;
     steels?: number;
+    position?: number[];
     atbat_results?: AtbatResultClass[];
   }) {
     this.player_id = data?.player_id ?? undefined;
-    this.position = data?.position ?? [0];
+    this.batting_order = data?.batting_order ?? 1;
+    this.batting_order_num = data?.batting_order_num ?? 1;
     this.rbi = data?.rbi ?? 0;
     this.runs = data?.runs ?? 0;
     this.steels = data?.steels ?? 0;
-    this.atbat_results = data?.atbat_results ?? [
-      new AtbatResultClass(),
-      new AtbatResultClass(),
-    ];
+    this.position = data?.position ?? [0];
+    this.atbat_results = data?.atbat_results ?? [new AtbatResultClass()];
   }
 }
 
@@ -116,6 +118,7 @@ export class PitchingResultClass {
   runs: number;
   earned_runs: number;
   result: string;
+  pitching_order: number;
 
   constructor(data?: {
     player_id?: number;
@@ -131,6 +134,7 @@ export class PitchingResultClass {
     runs?: number;
     earned_runs?: number;
     result?: string;
+    pitching_order?: number;
   }) {
     this.player_id = data?.player_id ?? undefined;
     this.innings = data?.innings ?? 0;
@@ -144,7 +148,8 @@ export class PitchingResultClass {
     this.balks = data?.balks ?? 0;
     this.runs = data?.runs ?? 0;
     this.earned_runs = data?.earned_runs ?? 0;
-    this.result = data?.result ?? "";
+    this.result = data?.result ?? "-";
+    this.pitching_order = data?.pitching_order ?? 1;
   }
 }
 

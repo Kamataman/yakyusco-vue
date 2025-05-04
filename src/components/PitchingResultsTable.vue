@@ -106,6 +106,12 @@ const columns: {
   headerClasses?: string;
 }[] = [
   {
+    name: "pitching_order",
+    label: "登板順",
+    field: "pitching_order",
+    align: "center",
+  },
+  {
     name: "player_id",
     label: "選手",
     field: "player",
@@ -152,21 +158,7 @@ const columns: {
 
 const addPitcher = () => {
   // 新しい投手を追加
-  pitchingresultModel.value.push({
-    player_id: undefined,
-    innings: 0,
-    pitchs: 0,
-    batters: 0,
-    hits: 0,
-    homeruns: 0,
-    strikeouts: 0,
-    walks: 0,
-    hit_by_pitch: 0,
-    balks: 0,
-    runs: 0,
-    earned_runs: 0,
-    result: "",
-  });
+  pitchingresultModel.value.push(new PitchingResultClass());
 };
 
 const headerStyle = (colName: string) => {

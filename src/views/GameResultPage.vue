@@ -5,15 +5,15 @@
       <div v-if="!isAdd">編集モード<q-toggle v-model="isEdit" /></div>
       <GameResultCard
         :is-edit="isEdit"
-        :win-lose="gameResult.winlose"
-        :is-ff="gameResult.is_ff"
-        :ff-team-name="gameResult.ff_Team_name"
-        :bf-team-name="gameResult.bf_Team_name"
-        :date="gameResult.date"
-        :place="gameResult.place"
-        :innings="gameResult.innings"
-        :review="gameResult.review"
-        :score-board-row="scoreBoardRow"
+        v-model:winLose="gameResult.winlose"
+        v-model:is-ff="gameResult.is_ff"
+        v-model:ff-team-name="gameResult.ff_Team_name"
+        v-model:bf-team-name="gameResult.bf_Team_name"
+        v-model:date="gameResult.date"
+        v-model:place="gameResult.place"
+        v-model:innings="gameResult.innings"
+        v-model:review="gameResult.review"
+        v-model:score-board-row="scoreBoardRow"
       ></GameResultCard>
       <div class="column q-pa-sm">
         <h2 class="text-h5 q-mb-md">打撃成績</h2>
@@ -73,10 +73,15 @@ const gameResult = ref<GameResult>({
   bf_runs: [],
   ff_runs: [],
   team_id: "",
-  id: 0,
   is_X: false,
-  batting_results: Array.from({ length: 9 }, () => new BattingResultClass()), // 9人分の打撃成績
-  pitching_results: Array.from({ length: 2 }, () => new PitchingResultClass()), // 2人分の投手成績
+  batting_results: Array.from(
+    { length: 1 },
+    (_, i) => new BattingResultClass({ batting_order: i + 1 })
+  ), // 9人分の打撃成績
+  pitching_results: Array.from(
+    { length: 1 },
+    (_, i) => new PitchingResultClass({ pitching_order: i + 1 })
+  ), // 2人分の投手成績
 });
 const scoreBoardRow = ref<ScoreBoardRow[]>([
   {
