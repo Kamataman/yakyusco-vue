@@ -22,6 +22,13 @@
               dense
             />
           </template>
+          <template v-else-if="isEdit && col.name === 'team'">
+            <q-input
+              v-model="rows[props.rowIndex][col.name]"
+              :input-style="{ color: 'white' }"
+              dense
+            />
+          </template>
           <template v-else> {{ props.row[col.name] }}</template>
         </q-td></q-tr
       ></template
