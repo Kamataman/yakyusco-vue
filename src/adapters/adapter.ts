@@ -61,6 +61,27 @@ export function transformGameResultToScoreData(
   ];
 }
 
+export function getScoreDataForGameResult(scoreBoardRows: ScoreBoardRow[]): {
+  bf_Team_name: string;
+  ff_Team_name: string;
+  bf_runs: number[];
+  ff_runs: number[];
+} {
+  function scoreDataToRuns(scoreBoardRow: ScoreBoardRow): number[] {
+    return Object.entries(scoreBoardRow)
+      .filter(([key]) => key.startsWith("inning"))
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([, value]) => value as number);
+  }
+
+  return {
+    bf_Team_name: scoreBoardRows[0].team,
+    ff_Team_name: scoreBoardRows[1].team,
+    bf_runs: scoreDataToRuns(scoreBoardRows[0]),
+    ff_runs: scoreDataToRuns(scoreBoardRows[1]),
+  };
+}
+
 export function getWinLoseExpression(winlose: string | undefined): string {
   switch (winlose) {
     case "W":

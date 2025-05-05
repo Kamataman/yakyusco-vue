@@ -56,6 +56,7 @@ import {
   getTeamIdFromUrl,
   PitchingResultClass,
   transformGameResultToScoreData,
+  getScoreDataForGameResult,
 } from "@/adapters/adapter";
 import GameResultCard from "@/components/GameResultCard.vue";
 
@@ -127,6 +128,12 @@ onMounted(async () => {
 });
 
 function saveGameResult(newValue: boolean | undefined = undefined) {
+  const scoreData = getScoreDataForGameResult(scoreBoardRow.value);
+  gameResult.value.bf_Team_name = scoreData.bf_Team_name;
+  gameResult.value.ff_Team_name = scoreData.ff_Team_name;
+  gameResult.value.bf_runs = scoreData.bf_runs;
+  gameResult.value.ff_runs = scoreData.ff_runs;
+
   // 新規追加モードのとき
   if (props.isAdd) {
     axiosInstance
