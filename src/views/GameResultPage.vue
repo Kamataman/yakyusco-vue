@@ -2,7 +2,12 @@
   <BaseLayout
     ><template #title>試合結果</template>
     <template #default>
-      <div v-if="!isAdd">編集モード<q-toggle v-model="isEdit" /></div>
+      <div v-if="!isAdd">
+        編集モード<q-toggle
+          v-model="isEdit"
+          @update:model-value="(value, evt) => saveGameResult(value)"
+        />
+      </div>
       <GameResultCard
         :is-edit="isEdit"
         v-model:winLose="gameResult.winlose"
@@ -31,13 +36,13 @@
         />
       </div>
       <div v-if="isAdd">
-        <q-btn color="primary" label="保存" @click="saveGameResult" />
+        <q-btn color="primary" label="保存" @click="saveGameResult()" />
       </div> </template
   ></BaseLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import axiosInstance from "@/plugins/axios";
 import router from "@/router";
 
@@ -60,6 +65,7 @@ const props = defineProps<{
 const isEdit = ref<boolean>(false);
 
 const gameResult = ref<GameResult>({
+  id: undefined,
   is_ff: true,
   bf_Team_name: "",
   ff_Team_name: "",
@@ -120,26 +126,35 @@ onMounted(async () => {
   }
 });
 
-function saveGameResult() {
+function saveGameResult(newValue: boolean | undefined = undefined) {
+  // 新規追加モードのとき
   if (props.isAdd) {
     axiosInstance
       .post("/gameresults", gameResult.value)
       .then((response) => {
-        console.log("試合結果が保存されました:", response.data);
-        router.push({ name: "GameResultList" });
+        window.alert("試合結果が保存されました:");
+        router.push({
+          name: "gameresult",
+          params: {
+            team: gameResult.value.team_id,
+            gameResultId: response.data.id,
+          },
+        });
+        isEdit.value = false;
       })
       .catch((error) => {
-        console.error("試合結果の保存に失敗しました:", error);
+        window.alert("試合結果の保存に失敗しました:" + error);
       });
-  } else {
+
+    // 新規追加モードでなく、編集が完了（isEditがfalseになったとき）
+  } else if (!newValue) {
     axiosInstance
       .put(`/gameresults/${gameResult.value.id}`, gameResult.value)
       .then((response) => {
-        console.log("試合結果が更新されました:", response.data);
-        router.push({ name: "GameResultList" });
+        window.alert("試合結果が更新されました:");
       })
       .catch((error) => {
-        console.error("試合結果の更新に失敗しました:", error);
+        window.alert("試合結果の更新に失敗しました:" + error);
       });
   }
 }

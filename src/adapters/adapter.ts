@@ -1,6 +1,7 @@
 import { useRoute } from "vue-router";
 
 export type GameResult = {
+  id: number | undefined;
   team_id: string;
   is_ff: boolean;
   date: string;
