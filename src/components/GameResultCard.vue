@@ -64,7 +64,17 @@
                 time-picker-inline
               />
             </template>
-            <template v-else> {{ date?.toLocaleString() }}</template>
+            <template v-else>
+              {{
+                date?.toLocaleString(undefined, {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              }}</template
+            >
           </div>
           <div>
             場所：<EditShowComponent

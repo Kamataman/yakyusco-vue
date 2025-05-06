@@ -5,7 +5,7 @@
       <div v-if="!isAdd">
         編集モード<q-toggle
           v-model="isEdit"
-          @update:model-value="(value, evt) => saveGameResult(value)"
+          @update:model-value="(value:boolean, ) => saveGameResult(value)"
         />
       </div>
       <GameResultCard
@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import axiosInstance from "@/plugins/axios";
 import router from "@/router";
 
@@ -50,14 +50,8 @@ import BattingResult from "@/components/BattingResultTable.vue";
 import PitchingResult from "@/components/PitchingResultsTable.vue";
 import BaseLayout from "@/components/BaseLayout.vue";
 
-import type { GameResult, ScoreBoardRow } from "@/adapters/adapter";
-import {
-  BattingResultClass,
-  getTeamIdFromUrl,
-  PitchingResultClass,
-  transformGameResultToScoreData,
-  getScoreDataForGameResult,
-} from "@/adapters/adapter";
+import type { ScoreBoardRow } from "@/adapters/adapter";
+import { getTeamIdFromUrl, GameResultClass } from "@/adapters/adapter";
 import GameResultCard from "@/components/GameResultCard.vue";
 
 const props = defineProps<{
@@ -65,31 +59,7 @@ const props = defineProps<{
 }>();
 const isEdit = ref<boolean>(false);
 
-const gameResult = ref<GameResult>({
-  id: undefined,
-  is_ff: true,
-  bf_Team_name: "",
-  ff_Team_name: "",
-  winlose: "",
-  innings: 0,
-  bf_total_runs: 0,
-  ff_total_runs: 0,
-  review: "",
-  place: "",
-  date: new Date(),
-  bf_runs: [],
-  ff_runs: [],
-  team_id: "",
-  is_X: false,
-  batting_results: Array.from(
-    { length: 1 },
-    (_, i) => new BattingResultClass({ batting_order: i + 1 })
-  ), // 9人分の打撃成績
-  pitching_results: Array.from(
-    { length: 1 },
-    (_, i) => new PitchingResultClass({ pitching_order: i + 1 })
-  ), // 2人分の投手成績
-});
+const gameResult = ref<GameResultClass>(new GameResultClass());
 const scoreBoardRow = ref<ScoreBoardRow[]>([
   {
     team: "",
@@ -110,18 +80,13 @@ onMounted(async () => {
     const gameresult_id = router.currentRoute.value.params.gameResultId;
     try {
       const response = await axiosInstance.get(`/gameresults/${gameresult_id}`);
-      gameResult.value = response.data;
+      gameResult.value = new GameResultClass(response.data);
 
       // 各試合結果をスコアボード用データに変換
       if (gameResult.value) {
-        scoreBoardRow.value = transformGameResultToScoreData({
-          bf_Team_name: gameResult.value.bf_Team_name,
-          ff_Team_name: gameResult.value.ff_Team_name,
-          bf_runs: gameResult.value.bf_runs,
-          ff_runs: gameResult.value.ff_runs,
-        });
+        scoreBoardRow.value = gameResult.value.transformGameResultToScoreData();
       }
-      gameResult.value.date = new Date(gameResult.value.date); // クラスの中で初期化するようにする
+      // gameResult.value.date = new Date(gameResult.value.date); // クラスの中で初期化するようにする
     } catch (error) {
       console.error("試合結果の取得に失敗しました:", error);
     }
@@ -129,11 +94,7 @@ onMounted(async () => {
 });
 
 function saveGameResult(newValue: boolean | undefined = undefined) {
-  const scoreData = getScoreDataForGameResult(scoreBoardRow.value);
-  gameResult.value.bf_Team_name = scoreData.bf_Team_name;
-  gameResult.value.ff_Team_name = scoreData.ff_Team_name;
-  gameResult.value.bf_runs = scoreData.bf_runs;
-  gameResult.value.ff_runs = scoreData.ff_runs;
+  gameResult.value.getScoreDataForGameResult(scoreBoardRow.value);
 
   // 新規追加モードのとき
   if (props.isAdd) {

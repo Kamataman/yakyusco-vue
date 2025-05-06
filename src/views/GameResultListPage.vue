@@ -61,14 +61,13 @@ import axiosInstance from "@/plugins/axios"; // axios設定をインポート
 
 import BaseLayout from "@/components/BaseLayout.vue";
 
-import type { GameResult } from "@/adapters/adapter.ts";
-import { transformGameResultToScoreData } from "@/adapters/adapter.ts"; // アダプターをインポート
+import { GameResultClass } from "@/adapters/adapter.ts"; // アダプターをインポート
 import GameResultCard from "@/components/GameResultCard.vue";
 
 const route = useRoute(); // 現在のルート情報を取得
 const teamId = route.params.team as string; // URLのパラメータからteamを取得
 
-const gameResults = ref<GameResult[]>([]);
+const gameResults = ref<GameResultClass[]>([]);
 
 const scoreBoardRows = ref<
   Array<{ team: string; total: number; [key: string]: number | string }>[]
@@ -76,20 +75,14 @@ const scoreBoardRows = ref<
 
 onMounted(async () => {
   try {
-    const response = await axiosInstance.get(`/teams/${teamId}/gameresults/`); // APIエンドポイントを指定
-    gameResults.value = response.data;
-    console.log("試合結果:", gameResults.value);
+    const response = await axiosInstance.get(`/teams/${teamId}/gameresults/`);
+    response.data.forEach((res: any) => {
+      gameResults.value.push(new GameResultClass(res));
+    });
 
     // 各試合結果をスコアボード用データに変換
     gameResults.value.forEach((gameResult) => {
-      scoreBoardRows.value.push(
-        transformGameResultToScoreData({
-          bf_Team_name: gameResult.bf_Team_name,
-          ff_Team_name: gameResult.ff_Team_name,
-          bf_runs: gameResult.bf_runs,
-          ff_runs: gameResult.ff_runs,
-        })
-      );
+      scoreBoardRows.value.push(gameResult.transformGameResultToScoreData());
     });
   } catch (error) {
     console.error("試合結果の取得に失敗しました:", error);
