@@ -4,7 +4,7 @@ export type GameResult = {
   id: number | undefined;
   team_id: string;
   is_ff: boolean;
-  date: string;
+  date: Date;
   bf_Team_name: string;
   ff_Team_name: string;
   winlose: string;

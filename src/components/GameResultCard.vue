@@ -53,10 +53,18 @@
             ></EditShowComponent>
           </div>
           <div>
-            日時：<EditShowComponent
-              :isEdit="isEdit"
-              v-model="date"
-            ></EditShowComponent>
+            日時：
+            <template v-if="isEdit">
+              <VueDatePicker
+                v-model="date"
+                format="yyyy/MM/dd HH:mm"
+                model-type="iso"
+                auto-apply
+                week-start="0"
+                time-picker-inline
+              />
+            </template>
+            <template v-else> {{ date?.toLocaleString() }}</template>
           </div>
           <div>
             場所：<EditShowComponent
@@ -87,6 +95,9 @@ import EditShowComponent from "./EditShowComponent.vue";
 
 import { computed } from "vue";
 
+import VueDatePicker from "@vuepic/vue-datepicker";
+import "@vuepic/vue-datepicker/dist/main.css";
+
 defineProps<{
   isEdit: boolean;
   //   winLose: string;
@@ -103,7 +114,7 @@ const winLose = defineModel<string>("winLose");
 const isFf = defineModel<boolean>("isFf");
 const ffTeamName = defineModel<string>("ffTeamName");
 const bfTeamName = defineModel<string>("bfTeamName");
-const date = defineModel<string>("date");
+const date = defineModel<Date>("date");
 const place = defineModel<string>("place");
 const innings = defineModel<number>("innings");
 const review = defineModel<string | undefined>("review");

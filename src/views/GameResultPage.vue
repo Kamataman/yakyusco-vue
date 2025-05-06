@@ -76,7 +76,7 @@ const gameResult = ref<GameResult>({
   ff_total_runs: 0,
   review: "",
   place: "",
-  date: "",
+  date: new Date(),
   bf_runs: [],
   ff_runs: [],
   team_id: "",
@@ -121,6 +121,7 @@ onMounted(async () => {
           ff_runs: gameResult.value.ff_runs,
         });
       }
+      gameResult.value.date = new Date(gameResult.value.date); // クラスの中で初期化するようにする
     } catch (error) {
       console.error("試合結果の取得に失敗しました:", error);
     }
