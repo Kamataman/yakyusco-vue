@@ -3,7 +3,7 @@
     ><template #title>試合結果一覧</template>
     <template #default>
       <template v-if="gameResults.length === 0">
-        <div class="text-h6">選手が登録されていません。</div>
+        <div class="text-h6">試合結果が登録されていません。</div>
       </template>
       <template v-else>
         <div
