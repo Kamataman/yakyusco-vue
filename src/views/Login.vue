@@ -49,7 +49,7 @@ async function handleLogin() {
     const teamId = userTeamId.value;
     if (teamId) {
       // あればチームidのurl
-      router.push({ name: "teamTop", params: { team: `${teamId}` } });
+      router.push({ name: "home", params: { team: `${teamId}` } });
     } else {
       // なければ初期設定画面
       router.push({ name: "initialsetting" });
