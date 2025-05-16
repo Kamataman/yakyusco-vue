@@ -2,14 +2,14 @@
   <BaseLayout
     ><template #title>試合結果</template>
     <template #default>
-      <div v-if="!isAdd">
+      <div v-if="!isAdd && isEditable">
         編集モード<q-toggle
-          v-model="isEdit"
+          v-model="isEditting"
           @update:model-value="(value:boolean, ) => saveGameResult(value)"
         />
       </div>
       <GameResultCard
-        :is-edit="isEdit"
+        :is-edit="isEditting"
         v-model:winLose="gameResult.winlose"
         v-model:is-ff="gameResult.is_ff"
         v-model:ff-team-name="gameResult.ff_Team_name"
@@ -24,7 +24,7 @@
         <h2 class="text-h5 q-mb-md">打撃成績</h2>
         <BattingResult
           v-model:battingResultModel="gameResult.batting_results"
-          :isEdit="isEdit"
+          :isEdit="isEditting"
           :innings="gameResult.innings"
         />
       </div>
@@ -32,7 +32,7 @@
         <h2 class="text-h5 q-mb-md">投手成績</h2>
         <PitchingResult
           v-model:pitchingresultModel="gameResult.pitching_results"
-          :isEdit="isEdit"
+          :isEdit="isEditting"
         />
       </div>
       <div v-if="isAdd">
@@ -43,8 +43,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import axiosInstance from "@/plugins/axios";
+import { axiosInstance, authAxiosInstance } from "@/plugins/axios";
 import router from "@/router";
+import { userTeamId } from "@/auth";
 
 import BattingResult from "@/components/BattingResultTable.vue";
 import PitchingResult from "@/components/PitchingResultsTable.vue";
@@ -57,7 +58,7 @@ import GameResultCard from "@/components/GameResultCard.vue";
 const props = defineProps<{
   isAdd: Boolean;
 }>();
-const isEdit = ref<boolean>(false);
+const isEditting = ref<boolean>(false);
 
 const gameResult = ref<GameResultClass>(new GameResultClass());
 const scoreBoardRow = ref<ScoreBoardRow[]>([
@@ -70,13 +71,14 @@ const scoreBoardRow = ref<ScoreBoardRow[]>([
     total: 0,
   },
 ]);
+const isEditable = ref<boolean>(false); // 編集可能かどうか
 
 onMounted(async () => {
   if (props.isAdd) {
-    isEdit.value = true;
+    isEditting.value = true;
     gameResult.value.team_id = getTeamIdFromUrl();
   } else {
-    isEdit.value = false;
+    isEditting.value = false;
     const gameresult_id = router.currentRoute.value.params.gameResultId;
     try {
       const response = await axiosInstance.get(`/gameresults/${gameresult_id}`);
@@ -87,6 +89,8 @@ onMounted(async () => {
         scoreBoardRow.value = gameResult.value.transformGameResultToScoreData();
       }
       // gameResult.value.date = new Date(gameResult.value.date); // クラスの中で初期化するようにする
+
+      isEditable.value = gameResult.value.team_id === userTeamId.value;
     } catch (error) {
       console.error("試合結果の取得に失敗しました:", error);
     }
@@ -98,7 +102,7 @@ function saveGameResult(newValue: boolean | undefined = undefined) {
 
   // 新規追加モードのとき
   if (props.isAdd) {
-    axiosInstance
+    authAxiosInstance
       .post("/gameresults", gameResult.value)
       .then((response) => {
         window.alert("試合結果が保存されました:");
@@ -109,7 +113,7 @@ function saveGameResult(newValue: boolean | undefined = undefined) {
             gameResultId: response.data.id,
           },
         });
-        isEdit.value = false;
+        isEditting.value = false;
       })
       .catch((error) => {
         window.alert("試合結果の保存に失敗しました:" + error);
@@ -117,7 +121,7 @@ function saveGameResult(newValue: boolean | undefined = undefined) {
 
     // 新規追加モードでなく、編集が完了（isEditがfalseになったとき）
   } else if (!newValue) {
-    axiosInstance
+    authAxiosInstance
       .put(`/gameresults/${gameResult.value.id}`, gameResult.value)
       .then((response) => {
         window.alert("試合結果が更新されました:");

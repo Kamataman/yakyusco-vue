@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
-import { getLoginUserTeamId, signIn } from "@/auth.ts";
+import { userTeamId, signIn } from "@/auth.ts";
 import router from "@/router";
 
 const email = ref("");
@@ -46,7 +46,7 @@ async function handleLogin() {
     await signIn(email.value, password.value);
     window.alert("ログインしました！");
     // カスタムクレームを確認する
-    const teamId = await getLoginUserTeamId();
+    const teamId = userTeamId.value;
     if (teamId) {
       // あればチームidのurl
       router.push({ name: "teamTop", params: { team: `${teamId}` } });

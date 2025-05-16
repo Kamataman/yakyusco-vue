@@ -2,7 +2,7 @@
   <BaseLayout
     ><template #title>{{ team.team_name }}</template>
     <template #default>
-      <p>説明　ほげほげ</p>
+      <p>{{ team.description }}</p>
     </template></BaseLayout
   >
 </template>
@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router"; // useRouteをインポート
-import axiosInstance from "../plugins/axios"; // axios設定をインポート
+import { axiosInstance } from "@/plugins/axios"; // axios設定をインポート
 
 import BaseLayout from "@/components/BaseLayout.vue";
 
@@ -20,7 +20,8 @@ const teamId = route.params.team as string; // URLのパラメータからteam�
 const team = ref<{
   id: string;
   team_name: string;
-}>({ id: "", team_name: "" }); // チーム情報を格納するref
+  description: string;
+}>({ id: "", team_name: "", description: "" }); // チーム情報を格納するref
 
 onMounted(async () => {
   try {

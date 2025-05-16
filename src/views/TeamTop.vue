@@ -3,6 +3,14 @@
     <q-header class="bg-primary text-white" height-hint="98">
       <q-toolbar>
         <q-toolbar-title> やきゅスコ </q-toolbar-title>
+        <template v-if="isLogin">
+          <q-btn @click="logout()">ログアウト</q-btn></template
+        >
+        <template v-else>
+          <q-btn @click="$router.push({ name: 'login' })"
+            >ログイン</q-btn
+          ></template
+        >
       </q-toolbar>
 
       <q-tabs align="left">
@@ -42,3 +50,7 @@
     </q-footer>
   </q-layout>
 </template>
+
+<script setup lang="ts">
+import { logout, isLogin } from "@/auth";
+</script>

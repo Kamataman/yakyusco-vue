@@ -2,13 +2,14 @@
   <BaseLayout
     ><template #title>選手一覧</template>
     <template #default>
-      <q-btn
-        label="選手を追加"
-        color="primary"
-        @click="isModalOpen = true"
-        class="q-mb-md"
-      />
-
+      <template v-if="isEditable">
+        <q-btn
+          label="選手を追加"
+          color="primary"
+          @click="isModalOpen = true"
+          class="q-mb-md"
+        />
+      </template>
       <div class="row q-pa-sm">
         <template v-if="players.length === 0">
           <div class="text-h6">選手が登録されていません。</div>
@@ -27,16 +28,16 @@
               </q-card-section>
 
               <q-separator />
-
-              <q-card-actions>
-                <q-btn flat label="編集" @click="openEditModal(player)" />
-                <q-btn
-                  flat
-                  label="削除"
-                  color="negative"
-                  @click="deletePlayer(player.id)"
-                />
-              </q-card-actions>
+              <template v-if="isEditable">
+                <q-card-actions>
+                  <q-btn flat label="編集" @click="openEditModal(player)" />
+                  <q-btn
+                    flat
+                    label="削除"
+                    color="negative"
+                    @click="deletePlayer(player.id)"
+                  /> </q-card-actions
+              ></template>
             </q-card>
           </div>
         </template>
@@ -87,9 +88,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router"; // useRouteをインポート
-import axiosInstance from "@/plugins/axios"; // axios設定をインポート
+import { axiosInstance, authAxiosInstance } from "@/plugins/axios"; // axios設定をインポート
+import { userTeamId } from "@/auth";
+
 import BaseLayout from "@/components/BaseLayout.vue";
 
 const route = useRoute(); // 現在のルート情報を取得
@@ -102,6 +105,10 @@ const players = ref<
     number: string;
   }[]
 >([]);
+
+const isEditable = computed<boolean>(() => {
+  return teamId === userTeamId.value;
+}); // 編集可能かどうか
 
 const isModalOpen = ref(false); // モーダルの開閉状態
 const isEditMode = ref(false); // 編集モードかどうか
@@ -120,7 +127,7 @@ const addOrUpdatePlayer = async () => {
   try {
     if (isEditMode.value && currentPlayerId.value !== null) {
       // 編集モードの場合
-      const response = await axiosInstance.put(
+      const response = await authAxiosInstance.put(
         `/players/${currentPlayerId.value}`,
         newPlayer.value
       );
@@ -131,7 +138,10 @@ const addOrUpdatePlayer = async () => {
     } else {
       // 新規追加の場合
       newPlayer.value.team_id = teamId; // URLから取得したteamIdを設定
-      const response = await axiosInstance.post("/players/", newPlayer.value);
+      const response = await authAxiosInstance.post(
+        "/players/",
+        newPlayer.value
+      );
       players.value.push(response.data); // 追加した選手をリストに反映
     }
     resetModal();
@@ -143,7 +153,7 @@ const addOrUpdatePlayer = async () => {
 
 const deletePlayer = async (id: number) => {
   try {
-    await axiosInstance.delete(`/players/${id}`);
+    await authAxiosInstance.delete(`/players/${id}`);
     players.value = players.value.filter((player) => player.id !== id); // 削除した選手をリストから除外
     window.alert("選手を削除しました。");
   } catch (error) {

@@ -39,25 +39,27 @@
           </div>
         </div>
       </template>
-      <div class="flex justify-end" style="margin: 10px">
-        <q-btn
-          label="+"
-          color="primary"
-          @click="
-            $router.push({
-              name: 'addgameresult',
-              params: { team: $route.params.team },
-            })
-          "
-        />
-      </div> </template
+      <template v-if="isEditable">
+        <div class="flex justify-end" style="margin: 10px">
+          <q-btn
+            label="+"
+            color="primary"
+            @click="
+              $router.push({
+                name: 'addgameresult',
+                params: { team: $route.params.team },
+              })
+            "
+          /></div
+      ></template> </template
   ></BaseLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router"; // useRouteをインポート
-import axiosInstance from "@/plugins/axios"; // axios設定をインポート
+import { axiosInstance } from "@/plugins/axios"; // axios設定をインポート
+import { userTeamId } from "@/auth";
 
 import BaseLayout from "@/components/BaseLayout.vue";
 
@@ -72,6 +74,10 @@ const gameResults = ref<GameResultClass[]>([]);
 const scoreBoardRows = ref<
   Array<{ team: string; total: number; [key: string]: number | string }>[]
 >([]);
+
+const isEditable = computed<boolean>(() => {
+  return teamId === userTeamId.value;
+}); // 編集可能かどうか
 
 onMounted(async () => {
   try {

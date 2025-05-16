@@ -1,9 +1,11 @@
+import { readonly, ref } from "vue";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  type User,
+  onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -19,48 +21,59 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-let user: User | undefined = undefined;
+// const user = ref<User | undefined>(undefined);
+const isLoginRef = ref<boolean>(false);
+const userIdTokenRef = ref<string | undefined>(undefined);
+const userTeamIdRef = ref<string | undefined>(undefined);
+
+onAuthStateChanged(auth, async (_user) => {
+  if (_user) {
+    isLoginRef.value = true;
+    userIdTokenRef.value = await _user.getIdToken();
+    userTeamIdRef.value = (await _user.getIdTokenResult()).claims
+      .teamId as string;
+  } else {
+    isLoginRef.value = false;
+    userIdTokenRef.value = undefined;
+    userTeamIdRef.value = undefined;
+  }
+});
+
+function waitForAuthStateChangeOnce() {
+  return new Promise((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        unsubscribe(); // 一度だけ
+        resolve(user);
+      }
+    });
+  });
+}
+
+export const isLogin = readonly(isLoginRef);
+
+export const userTeamId = readonly(userTeamIdRef);
+
+export const userIdToken = readonly(userIdTokenRef);
 
 export async function signUp(email: string, password: string) {
   try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    user = userCredential.user;
+    await createUserWithEmailAndPassword(auth, email, password);
+    await waitForAuthStateChangeOnce();
   } catch (error) {
-    console.log("signuperror");
     throw error;
   }
 }
 
 export async function signIn(email: string, password: string) {
   try {
-    const userCredential = await signInWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    user = userCredential.user;
+    await signInWithEmailAndPassword(auth, email, password);
+    await waitForAuthStateChangeOnce();
   } catch (error) {
-    console.log("signinerror");
     throw error;
   }
 }
 
-export function signOut() {
-  user = undefined;
-}
-
-export function getLoginUser() {
-  return user;
-}
-
-export async function getLoginUserTeamId() {
-  if (user) {
-    const tokenResult = await user.getIdTokenResult();
-    return tokenResult.claims.teamId;
-  }
-  return undefined;
+export function logout() {
+  signOut(auth);
 }

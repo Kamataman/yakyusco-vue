@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import axiosInstance from "@/plugins/axios";
+import { axiosInstance } from "@/plugins/axios";
 import { getTeamIdFromUrl } from "@/adapters/adapter";
 
 defineProps<{
