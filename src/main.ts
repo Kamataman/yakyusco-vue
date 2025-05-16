@@ -14,6 +14,14 @@ myApp.use(Quasar, {
 });
 
 import router from "./router";
+import { getLoginUser } from "@/auth";
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !getLoginUser()) {
+    next("/login");
+  } else {
+    next();
+  }
+});
 myApp.use(router);
 
 import { createPinia } from "pinia";

@@ -1,6 +1,9 @@
 // Setting Router
 import { createRouter, createWebHistory } from "vue-router";
 import AppTop from "@/views/AppTop.vue";
+import Login from "@/views/Login.vue";
+import SignUp from "@/views/SignUp.vue";
+import InitialSetting from "@/views/InitialSetting.vue";
 import TeamHomePage from "@/views/TeamHomePage.vue";
 import PlayerListPage from "@/views/PlayerListPage.vue";
 import GameResultListPage from "@/views/GameResultListPage.vue";
@@ -11,7 +14,16 @@ import Testview from "@/views/testview.vue";
 
 const routes = [
   { path: "/", component: AppTop },
+  { name: "login", path: "/login", component: Login },
+  { name: "signup", path: "/signup", component: SignUp },
   {
+    name: "initialsetting",
+    path: "/initialsetting",
+    component: InitialSetting,
+    meta: { requiresAuth: true },
+  },
+  {
+    name: "teamTop",
     path: "/:team",
     component: TeamTop,
     children: [
@@ -32,6 +44,7 @@ const routes = [
         name: "addgameresult",
         component: GameResultPage,
         props: { isAdd: true },
+        meta: { requiresAuth: true },
       },
       { path: "players", name: "players", component: PlayerListPage },
       { path: "stats", name: "stats", component: StatsPage },
