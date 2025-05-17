@@ -39,24 +39,30 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
+import { authAxiosInstance } from "@/plugins/axios";
+import router from "@/router";
 
 const teamId = ref("");
 const teamName = ref("");
 const teamDescription = ref("");
 
-function handleSave() {
+async function handleSave() {
   if (!teamId.value || !teamName.value || !teamDescription.value) {
     alert("すべてのフィールドを入力してください。");
     return;
   }
 
-  // 初期設定の保存処理（例: API呼び出し）
-  console.log("チーム初期設定:", {
-    teamId: teamId.value,
-    teamName: teamName.value,
-    teamDescription: teamDescription.value,
-  });
-  alert("チーム初期設定が保存されました！");
+  try {
+    await authAxiosInstance.post(`/teams/`, {
+      id: teamId.value,
+      team_name: teamName.value,
+      description: teamDescription.value,
+    });
+    alert("チーム初期設定が保存されました！");
+    router.push({ name: "home", params: { team: `${teamId.value}` } });
+  } catch (error) {
+    alert("初期設定に失敗しました。");
+  }
 }
 </script>
 
