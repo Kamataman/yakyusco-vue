@@ -13,6 +13,7 @@ import { useRoute } from "vue-router"; // useRouteをインポート
 import { axiosInstance } from "@/plugins/axios"; // axios設定をインポート
 
 import BaseLayout from "@/components/BaseLayout.vue";
+import router from "@/router";
 
 const route = useRoute(); // 現在のルート情報を取得
 const teamId = route.params.team as string; // URLのパラメータからteamを取得
@@ -29,6 +30,7 @@ onMounted(async () => {
     team.value = response.data;
   } catch (error) {
     console.error("チームデータの取得に失敗しました:", error);
+    router.push({ path: "/" });
   }
 });
 </script>
