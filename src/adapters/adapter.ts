@@ -48,12 +48,12 @@ export class GameResultClass {
 
     this.bf_Team_name = data?.bf_Team_name ?? "";
     this.ff_Team_name = data?.ff_Team_name ?? "";
-    this.winlose = data?.winlose ?? "";
+    this.winlose = data?.winlose ?? "W";
     this.review = data?.review ?? "";
     this.place = data?.place ?? "";
-    this.innings = data?.innings ?? 0;
-    this.bf_runs = data?.bf_runs ?? [];
-    this.ff_runs = data?.ff_runs ?? [];
+    this.innings = data?.innings ?? 1;
+    this.bf_runs = data?.bf_runs ?? [0];
+    this.ff_runs = data?.ff_runs ?? [0];
     this.bf_total_runs = data?.bf_total_runs ?? 0;
     this.ff_total_runs = data?.ff_total_runs ?? 0;
     this.is_X = data?.is_X ?? false;
