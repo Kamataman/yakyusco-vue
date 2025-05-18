@@ -35,6 +35,9 @@
 import type { QTableProps } from "quasar";
 
 import BaseLayout from "@/components/BaseLayout.vue";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import { axiosInstance } from "@/plugins/axios";
 
 const battingColumns: QTableProps["columns"] = [
   {
@@ -59,47 +62,9 @@ const battingColumns: QTableProps["columns"] = [
   { name: "hits", label: "安打", field: "hits", sortable: true },
 ];
 
-const battingRows: QTableProps["rows"] = [
-  {
-    no: 17,
-    name: "Ohtani",
-    avg: 0.313,
-    games: 5,
-    pa: 20,
-    ab: 17,
-    hits: 8,
-  },
-  {
-    no: 1,
-    name: "Herunandesu",
-    avg: 0.253,
-    games: 5,
-    pa: 18,
-    ab: 16,
-    hits: 5,
-  },
-  {
-    no: 4,
-    name: "Sekando",
-    avg: 0.23,
-    games: 4,
-    pa: 11,
-    ab: 9,
-    hits: 4,
-  },
-  {
-    no: 6,
-    name: "Sho-to",
-    avg: 0.27,
-    games: 4,
-    pa: 15,
-    ab: 8,
-    hits: 3,
-  },
-];
 const pitchingColumns: QTableProps["columns"] = [
   {
-    name: "no",
+    name: "number",
     required: true,
     label: "＃",
     align: "left",
@@ -120,69 +85,24 @@ const pitchingColumns: QTableProps["columns"] = [
   { name: "loses", label: "敗戦", field: "loses", sortable: true },
 ];
 
-const pitchingRows: QTableProps["rows"] = [
-  {
-    no: 17,
-    name: "Ohtani",
-    era: 2.33,
-    games: 24,
-    starts: 24,
-    wins: 14,
-    loses: 4,
-  },
-  {
-    no: 1,
-    name: "Pittya-",
-    era: 3.67,
-    games: 26,
-    starts: 6,
-    wins: 15,
-    loses: 12,
-  },
-  {
-    no: 11,
-    name: "投太郎",
-    era: 6.44,
-    games: 64,
-    starts: 0,
-    wins: 5,
-    loses: 6,
-  },
-  {
-    no: 22,
-    name: "Daimajin",
-    era: 1.67,
-    games: 54,
-    starts: 0,
-    wins: 3,
-    loses: 2,
-  },
-  {
-    no: 33,
-    name: "酷使君",
-    era: 4.33,
-    games: 73,
-    starts: 7,
-    wins: 4,
-    loses: 8,
-  },
-  {
-    no: 50,
-    name: "Wakate",
-    era: 10.34,
-    games: 4,
-    starts: 2,
-    wins: 0,
-    loses: 2,
-  },
-  {
-    no: 67,
-    name: "Wakate2",
-    era: 6.33,
-    games: 15,
-    starts: 7,
-    wins: 2,
-    loses: 7,
-  },
-];
+const battingRows = ref([]);
+const pitchingRows = ref([]);
+
+onMounted(async () => {
+  const route = useRoute(); // 現在のルート情報を取得
+  const teamId = route.params.team as string; // URLのパラメータからteamを取得
+
+  try {
+    const battingResponse = await axiosInstance.get(
+      `/teams/${teamId}/stats/batting`
+    );
+    const pitchingResponse = await axiosInstance.get(
+      `/teams/${teamId}/stats/pitching`
+    );
+    battingRows.value = battingResponse.data;
+    pitchingRows.value = pitchingResponse.data;
+  } catch (error) {
+    console.error("選手データの取得に失敗しました:", error);
+  }
+});
 </script>
