@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { axiosInstance, authAxiosInstance } from "@/plugins/axios";
 import router from "@/router";
 import { userTeamId } from "@/auth";
@@ -54,6 +54,7 @@ import BaseLayout from "@/components/BaseLayout.vue";
 import type { ScoreBoardRow } from "@/adapters/adapter";
 import { getTeamIdFromUrl, GameResultClass } from "@/adapters/adapter";
 import GameResultCard from "@/components/GameResultCard.vue";
+import { useRoute } from "vue-router";
 
 const props = defineProps<{
   isAdd: Boolean;
@@ -71,7 +72,13 @@ const scoreBoardRow = ref<ScoreBoardRow[]>([
     total: 0,
   },
 ]);
-const isEditable = ref<boolean>(false); // 編集可能かどうか
+
+const route = useRoute(); // 現在のルート情報を取得
+const teamId = route.params.team as string; // URLのパラメータからteamを取得
+
+const isEditable = computed<boolean>(() => {
+  return teamId === userTeamId.value;
+}); // 編集可能かどうか
 
 onMounted(async () => {
   if (props.isAdd) {
@@ -89,8 +96,6 @@ onMounted(async () => {
         scoreBoardRow.value = gameResult.value.transformGameResultToScoreData();
       }
       // gameResult.value.date = new Date(gameResult.value.date); // クラスの中で初期化するようにする
-
-      isEditable.value = gameResult.value.team_id === userTeamId.value;
     } catch (error) {
       console.error("試合結果の取得に失敗しました:", error);
     }

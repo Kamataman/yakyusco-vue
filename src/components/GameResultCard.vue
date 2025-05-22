@@ -131,7 +131,6 @@ const review = defineModel<string | undefined>("review");
 const scoreBoardRow = defineModel<ScoreBoardRow[]>("scoreBoardRow");
 
 const winLoseExpression = computed(() => {
-  console.log("winLose.value", winLose.value);
   switch (winLose.value) {
     case "W":
       return "勝利！！";

@@ -206,7 +206,7 @@ export class AtbatResultClass {
     position?: number;
     is_scpos?: boolean;
   }) {
-    this.inning = data?.inning ?? 0;
+    this.inning = data?.inning ?? 1;
     this.result = data?.result ?? "";
     this.position = data?.position ?? undefined;
     this.is_scpos = data?.is_scpos ?? false;
