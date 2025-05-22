@@ -158,7 +158,11 @@ const columns: {
 
 const addPitcher = () => {
   // 新しい投手を追加
-  pitchingresultModel.value.push(new PitchingResultClass());
+  pitchingresultModel.value.push(
+    new PitchingResultClass({
+      pitching_order: pitchingresultModel.value.length + 1,
+    })
+  );
 };
 
 const headerStyle = (colName: string) => {
