@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
+  type User,
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -27,27 +28,30 @@ const userIdTokenRef = ref<string | undefined>(undefined);
 const userTeamIdRef = ref<string | undefined>(undefined);
 
 onAuthStateChanged(auth, async (_user) => {
-  if (_user) {
+  loginUserSetup(_user);
+});
+
+function waitForAuthStateChangeOnce() {
+  return new Promise((resolve) => {
+    const unsubscribe = onAuthStateChanged(auth, (_user) => {
+      loginUserSetup(_user);
+      unsubscribe(); // 一度だけ
+      resolve(_user);
+    });
+  });
+}
+
+async function loginUserSetup(user: User | null) {
+  if (user) {
     isLoginRef.value = true;
-    userIdTokenRef.value = await _user.getIdToken();
-    userTeamIdRef.value = (await _user.getIdTokenResult()).claims
+    userIdTokenRef.value = await user.getIdToken();
+    userTeamIdRef.value = (await user.getIdTokenResult()).claims
       .teamId as string;
   } else {
     isLoginRef.value = false;
     userIdTokenRef.value = undefined;
     userTeamIdRef.value = undefined;
   }
-});
-
-function waitForAuthStateChangeOnce() {
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        unsubscribe(); // 一度だけ
-        resolve(user);
-      }
-    });
-  });
 }
 
 export const isLogin = readonly(isLoginRef);
