@@ -126,7 +126,7 @@ const ffTeamName = defineModel<string>("ffTeamName");
 const bfTeamName = defineModel<string>("bfTeamName");
 const date = defineModel<Date>("date");
 const place = defineModel<string>("place");
-const innings = defineModel<number>("innings");
+const innings = defineModel<number>("innings", { default: 1 });
 const review = defineModel<string | undefined>("review");
 const scoreBoardRow = defineModel<ScoreBoardRow[]>("scoreBoardRow");
 

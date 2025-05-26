@@ -14,7 +14,7 @@
           :key="col.name"
           :props="props"
           class="text-center"
-          :style="headerStyle(col.name)"
+          :style="headerStyle()"
         >
           {{ col.label }}
         </q-th>
@@ -32,7 +32,7 @@
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          :style="getCellStyle(col.name, props.row)"
+          :style="getCellStyle()"
         >
           <!-- 選手のセル -->
           <template v-if="col.name === 'player_id'">
@@ -165,11 +165,11 @@ const addPitcher = () => {
   );
 };
 
-const headerStyle = (colName: string) => {
+const headerStyle = () => {
   return "background-color: #e0f7ff;";
 };
 
-const getCellStyle = (colName: string, row: any) => {
+const getCellStyle = () => {
   return "";
 };
 </script>

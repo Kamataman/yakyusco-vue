@@ -15,7 +15,7 @@ myApp.use(Quasar, {
 
 import router from "./router";
 import { isLogin } from "@/auth";
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   if (to.meta.requiresAuth && !isLogin.value) {
     next("/login");
   } else {

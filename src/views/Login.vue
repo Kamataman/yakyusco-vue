@@ -55,7 +55,7 @@ async function handleLogin() {
       router.push({ name: "initialsetting" });
     }
   } catch (error: any) {
-    const errorCode = error.code;
+    // const errorCode = error.code;
     const errorMessage = error.message;
     window.alert("ログインに失敗しました。" + errorMessage);
   }

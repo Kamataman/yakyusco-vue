@@ -108,7 +108,7 @@ function saveGameResult(newValue: boolean | undefined = undefined) {
   // 新規追加モードのとき
   if (props.isAdd) {
     authAxiosInstance
-      .post("/gameresults", gameResult.value)
+      .post("/gameresults/", gameResult.value)
       .then((response) => {
         window.alert("試合結果が保存されました:");
         router.push({
@@ -128,7 +128,7 @@ function saveGameResult(newValue: boolean | undefined = undefined) {
   } else if (!newValue) {
     authAxiosInstance
       .put(`/gameresults/${gameResult.value.id}`, gameResult.value)
-      .then((response) => {
+      .then((_response) => {
         window.alert("試合結果が更新されました:");
       })
       .catch((error) => {

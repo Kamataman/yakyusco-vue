@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <template v-if="isEdit">
-      <template v-for="(position, i) in positions" :key="i">
+      <template v-for="(_position, i) in positions" :key="i">
         <q-select
           v-model="positions[i]"
           :options="positionOptions"

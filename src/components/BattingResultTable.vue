@@ -50,7 +50,7 @@
           v-for="col in props.cols"
           :key="col.name"
           :props="props"
-          :style="getCellStyle(col.name, props.row)"
+          :style="getCellStyle(col.name)"
         >
           <!-- 選手のセル -->
           <template v-if="col.name === 'player_id'">
@@ -146,13 +146,15 @@ const battingResultModel = defineModel<BattingResultClass[]>(
 //     : getDefaultData()
 // );
 
-const columns: {
-  name: string;
-  label: string;
-  field: string;
-  align: "center" | "left" | "right" | undefined;
-  headerClasses?: string;
-}[] = computed(() => {
+const columns = computed<
+  {
+    name: string;
+    label: string;
+    field: string;
+    align: "center" | "left" | "right" | undefined;
+    headerClasses?: string;
+  }[]
+>(() => {
   const baseColumns = [
     {
       name: "batting_order",
@@ -192,7 +194,13 @@ const columns: {
     align: "center",
   }));
 
-  return [...baseColumns, ...inningColumns];
+  return [...baseColumns, ...inningColumns] as {
+    name: string;
+    label: string;
+    field: string;
+    align: "center" | "left" | "right" | undefined;
+    headerClasses?: string;
+  }[];
 });
 
 // const displayRows = computed(() => rows.value);
@@ -230,16 +238,17 @@ function getCellStyle(colName: string): string {
   return "";
 }
 
-function getCellClass(value: string): string {
-  if (!value) return "";
-  if (value.includes("安")) {
-    return "hit-cell";
-  }
-  if (value === "中安") {
-    return "scoring-position-cell";
-  }
-  return "";
-}
+// function getCellClass(value: string): string {
+//   if (!value) return "";
+//   if (value.includes("安")) {
+//     return "hit-cell";
+//   }
+//   if (value === "中安") {
+//     return "scoring-position-cell";
+//   }
+//   return "";
+// }
+//
 </script>
 
 <style scoped>

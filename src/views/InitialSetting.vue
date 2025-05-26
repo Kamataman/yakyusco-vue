@@ -32,7 +32,6 @@
         ></textarea>
       </div>
       <button type="submit">保存</button>
-      <RouterLink to="/jesus" exact>サンプルチームを見る</RouterLink>
     </form>
   </div>
 </template>

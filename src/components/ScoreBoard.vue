@@ -43,10 +43,10 @@ import { ref, computed } from "vue";
 // propsで外部からデータを受け取る
 const rows = defineModel<ScoreBoardRow[]>("rows", { default: () => [] });
 const rowRef = ref(rows);
-const props = defineProps({
-  isEdit: Boolean,
-  innings: Number,
-});
+const props = defineProps<{
+  isEdit: boolean;
+  innings: number;
+}>();
 
 // columnsを動的に生成
 const columns = computed<
@@ -56,26 +56,34 @@ const columns = computed<
     field: string;
     align: "left" | "center" | "right" | undefined;
   }[]
->(() => [
-  {
-    name: "team",
-    label: "チーム",
-    field: "team",
-    align: "left",
-  },
-  ...Array.from({ length: props.innings }, (_, i) => ({
-    name: `inning${i + 1}`,
-    label: `${i + 1}`,
-    field: `inning${i + 1}`,
-    align: "center" as "center",
-  })),
-  {
-    name: "total",
-    label: "計",
-    field: "total",
-    align: "center",
-  },
-]);
+>(
+  () =>
+    [
+      {
+        name: "team",
+        label: "チーム",
+        field: "team",
+        align: "left",
+      },
+      ...Array.from({ length: props.innings }, (_, i) => ({
+        name: `inning${i + 1}`,
+        label: `${i + 1}`,
+        field: `inning${i + 1}`,
+        align: "center",
+      })),
+      {
+        name: "total",
+        label: "計",
+        field: "total",
+        align: "center",
+      },
+    ] as {
+      name: string;
+      label: string;
+      field: string;
+      align: "left" | "center" | "right" | undefined;
+    }[]
+);
 </script>
 
 <style scoped>

@@ -2,11 +2,9 @@
   <ScoreBoard v-model:rows="data" :innings="innings" :isEdit="isEdit" />
 </template>
 <script setup lang="ts">
-import { AtbatResultClass, type ScoreBoardRow } from "@/adapters/adapter";
+import { type ScoreBoardRow } from "@/adapters/adapter";
 import { ref } from "vue";
 import ScoreBoard from "@/components/ScoreBoard.vue";
-import InputAtbatResult from "@/components/InputAtbatResults.vue";
-import ShowAtbatResult from "@/components/ShowAtbatResult.vue";
 const data = ref<ScoreBoardRow[]>([
   {
     team: "先攻チーム",

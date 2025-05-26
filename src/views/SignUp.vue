@@ -64,7 +64,7 @@ async function handleRegister() {
     // 初期設定画面に遷移
     router.push({ name: "initialsetting" });
   } catch (error: any) {
-    const errorCode = error.code;
+    // const errorCode = error.code;
     const errorMessage = error.message;
     window.alert("ユーザー登録に失敗しました。" + errorMessage);
   }
