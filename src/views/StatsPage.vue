@@ -13,6 +13,7 @@
           row-key="no"
           hide-bottom
           separator="cell"
+          :loading="isLoading"
         />
       </div>
       <div class="q-pa-md">
@@ -26,6 +27,7 @@
           row-key="no"
           hide-bottom
           separator="cell"
+          :loading="isLoading"
         />
       </div> </template
   ></BaseLayout>
@@ -38,6 +40,8 @@ import BaseLayout from "@/components/BaseLayout.vue";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { axiosInstance } from "@/plugins/axios";
+
+const isLoading = ref(true);
 
 const battingColumns: QTableProps["columns"] = [
   {
@@ -147,6 +151,8 @@ onMounted(async () => {
     );
     battingRows.value = battingResponse.data;
     pitchingRows.value = pitchingResponse.data;
+
+    isLoading.value = false; // データ取得完了後にローディングを終了
   } catch (error) {
     console.error("選手データの取得に失敗しました:", error);
   }

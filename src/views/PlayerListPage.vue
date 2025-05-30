@@ -11,36 +11,38 @@
         />
       </template>
       <div class="row q-pa-sm">
-        <template v-if="players.length === 0">
-          <div class="text-h6">選手が登録されていません。</div>
-        </template>
+        <template v-if="isLoading"><LoadingComponent /></template>
         <template v-else>
-          <div
-            v-for="(player, i) in players"
-            :key="i"
-            class="q-pa-xs"
-            style="width: 20rem"
-          >
-            <q-card class="my-card">
-              <q-card-section>
-                <div class="text-h6">{{ player.name }}</div>
-                <div class="text-subtitle2">#{{ player.number }}</div>
-              </q-card-section>
+          <template v-if="players.length === 0">
+            <div class="text-h6">選手が登録されていません。</div>
+          </template>
+          <template v-else>
+            <div
+              v-for="(player, i) in players"
+              :key="i"
+              class="q-pa-xs"
+              style="width: 20rem"
+            >
+              <q-card class="my-card">
+                <q-card-section>
+                  <div class="text-h6">{{ player.name }}</div>
+                  <div class="text-subtitle2">#{{ player.number }}</div>
+                </q-card-section>
 
-              <q-separator />
-              <template v-if="isEditable">
-                <q-card-actions>
-                  <q-btn flat label="編集" @click="openEditModal(player)" />
-                  <q-btn
-                    flat
-                    label="削除"
-                    color="negative"
-                    @click="deletePlayer(player.id)"
-                  /> </q-card-actions
-              ></template>
-            </q-card>
-          </div>
-        </template>
+                <q-separator />
+                <template v-if="isEditable">
+                  <q-card-actions>
+                    <q-btn flat label="編集" @click="openEditModal(player)" />
+                    <q-btn
+                      flat
+                      label="削除"
+                      color="negative"
+                      @click="deletePlayer(player.id)"
+                    /> </q-card-actions
+                ></template>
+              </q-card>
+            </div> </template
+        ></template>
       </div>
 
       <!-- モーダル -->
@@ -94,6 +96,7 @@ import { axiosInstance, authAxiosInstance } from "@/plugins/axios"; // axios設�
 import { userTeamId } from "@/auth";
 
 import BaseLayout from "@/components/BaseLayout.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 
 const route = useRoute(); // 現在のルート情報を取得
 const teamId = route.params.team as string; // URLのパラメータからteamを取得
@@ -112,6 +115,7 @@ const isEditable = computed<boolean>(() => {
 
 const isModalOpen = ref(false); // モーダルの開閉状態
 const isEditMode = ref(false); // 編集モードかどうか
+const isLoading = ref(true); // データの読み込み状態
 const currentPlayerId = ref<number | null>(null); // 編集対象の選手ID
 const newPlayer = ref<{
   name: string;
@@ -186,6 +190,7 @@ onMounted(async () => {
   try {
     const response = await axiosInstance.get(`/teams/${teamId}/players/`); // URLから取得したteamIdを使用
     players.value = response.data;
+    isLoading.value = false; // データの読み込みが完了
   } catch (error) {
     console.error("選手データの取得に失敗しました:", error);
   }
