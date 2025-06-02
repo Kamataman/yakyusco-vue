@@ -5,25 +5,28 @@
       <input v-else v-model="editTeam.team_name" />
     </template>
     <template #default>
-      <div v-if="!isEdit">
-        <p>{{ team.description }}</p>
-        <template v-if="isEditable"
-          ><q-btn color="primary" @click="startEdit">編集</q-btn></template
-        >
-      </div>
-      <div v-else>
-        <q-input
-          v-model="editTeam.description"
-          label="チーム紹介"
-          type="textarea"
-          autogrow
-        />
-        <div class="q-mt-md">
-          <q-btn color="primary" @click="saveEdit">保存</q-btn>
-          <q-btn flat @click="cancelEdit" class="q-ml-sm">キャンセル</q-btn>
+      <template v-if="isLoading"><LoadingComponent /></template>
+      <template v-else>
+        <div v-if="!isEdit">
+          <p>{{ team.description }}</p>
+          <template v-if="isEditable"
+            ><q-btn color="primary" @click="startEdit">編集</q-btn></template
+          >
         </div>
-      </div>
-    </template>
+        <div v-else>
+          <q-input
+            v-model="editTeam.description"
+            label="チーム紹介"
+            type="textarea"
+            autogrow
+          />
+          <div class="q-mt-md">
+            <q-btn color="primary" @click="saveEdit">保存</q-btn>
+            <q-btn flat @click="cancelEdit" class="q-ml-sm">キャンセル</q-btn>
+          </div>
+        </div>
+      </template></template
+    >
   </BaseLayout>
 </template>
 
@@ -33,6 +36,7 @@ import { useRoute } from "vue-router";
 import { axiosInstance, authAxiosInstance } from "@/plugins/axios";
 import { userTeamId } from "@/auth";
 import BaseLayout from "@/components/BaseLayout.vue";
+import LoadingComponent from "@/components/LoadingComponent.vue";
 import router from "@/router";
 
 const route = useRoute();
@@ -49,11 +53,13 @@ const editTeam = ref({ team_name: "", description: "" });
 const isEditable = computed<boolean>(() => {
   return teamId === userTeamId.value;
 }); // 編集可能かどうか
+const isLoading = ref(true); // データの読み込み状態
 
 onMounted(async () => {
   try {
     const response = await axiosInstance.get(`/teams/${teamId}`);
     team.value = response.data;
+    isLoading.value = false;
   } catch (error) {
     console.error("チームデータの取得に失敗しました:", error);
     router.push({ path: "/" });
