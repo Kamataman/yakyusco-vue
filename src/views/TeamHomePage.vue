@@ -1,28 +1,54 @@
 <template>
-  <BaseLayout
-    ><template #title>{{ team.team_name }}</template>
+  <BaseLayout>
+    <template #title>
+      <span v-if="!isEdit">{{ team.team_name }}</span>
+      <input v-else v-model="editTeam.team_name" />
+    </template>
     <template #default>
-      <p>{{ team.description }}</p>
-    </template></BaseLayout
-  >
+      <div v-if="!isEdit">
+        <p>{{ team.description }}</p>
+        <template v-if="isEditable"
+          ><q-btn color="primary" @click="startEdit">編集</q-btn></template
+        >
+      </div>
+      <div v-else>
+        <q-input
+          v-model="editTeam.description"
+          label="チーム紹介"
+          type="textarea"
+          autogrow
+        />
+        <div class="q-mt-md">
+          <q-btn color="primary" @click="saveEdit">保存</q-btn>
+          <q-btn flat @click="cancelEdit" class="q-ml-sm">キャンセル</q-btn>
+        </div>
+      </div>
+    </template>
+  </BaseLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router"; // useRouteをインポート
-import { axiosInstance } from "@/plugins/axios"; // axios設定をインポート
-
+import { ref, onMounted, computed } from "vue";
+import { useRoute } from "vue-router";
+import { axiosInstance, authAxiosInstance } from "@/plugins/axios";
+import { userTeamId } from "@/auth";
 import BaseLayout from "@/components/BaseLayout.vue";
 import router from "@/router";
 
-const route = useRoute(); // 現在のルート情報を取得
-const teamId = route.params.team as string; // URLのパラメータからteamを取得
+const route = useRoute();
+const teamId = route.params.team as string;
 
-const team = ref<{
-  id: string;
-  team_name: string;
-  description: string;
-}>({ id: "", team_name: "", description: "" }); // チーム情報を格納するref
+const team = ref<{ id: string; team_name: string; description: string }>({
+  id: "",
+  team_name: "",
+  description: "",
+});
+const isEdit = ref(false);
+const editTeam = ref({ team_name: "", description: "" });
+
+const isEditable = computed<boolean>(() => {
+  return teamId === userTeamId.value;
+}); // 編集可能かどうか
 
 onMounted(async () => {
   try {
@@ -33,4 +59,26 @@ onMounted(async () => {
     router.push({ path: "/" });
   }
 });
+
+function startEdit() {
+  editTeam.value = { ...team.value };
+  isEdit.value = true;
+}
+
+async function saveEdit() {
+  try {
+    const response = await authAxiosInstance.put(
+      `/teams/${teamId}`,
+      editTeam.value
+    );
+    team.value = response.data;
+    isEdit.value = false;
+  } catch (error) {
+    alert("保存に失敗しました");
+  }
+}
+
+function cancelEdit() {
+  isEdit.value = false;
+}
 </script>
